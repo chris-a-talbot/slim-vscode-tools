@@ -66,10 +66,10 @@ function loadDocumentation() {
             const eidosClasses = JSON.parse(fs.readFileSync(eidosClassesPath, "utf8"));
             classesData = Object.assign(Object.assign({}, classesData), eidosClasses);
         }
-        console.log("✅ Extension loaded documentation successfully");
+        console.log("Extension loaded documentation successfully");
     }
     catch (error) {
-        console.error("❌ Error loading documentation:", error);
+        console.error("Error loading documentation:", error);
     }
 }
 let client;

@@ -15,12 +15,40 @@ const { DocTreeProvider } = require('./docTreeProvider');
 let client;
 
 function activate(context) {
-  const serverModule = context.asAbsolutePath(path.join('server', 'index.js'));
+  // Use TypeScript language server
+  const serverModule = context.asAbsolutePath(path.join('dist', 'index.js'));
+  
+  // Verify the server file exists
+  if (!fs.existsSync(serverModule)) {
+    const errorMsg = `SLiM Language Server not found at: ${serverModule}. Please run 'npm run compile' to build the server.`;
+    console.error(errorMsg);
+    vscode.window.showErrorMessage(errorMsg);
+    return;
+  }
+  
   const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
 
+  // Runtime options to ensure the server can find node_modules
+  // The cwd should be the extension root so node_modules can be resolved
+  const runtimeOptions = {
+    cwd: context.extensionPath,
+    env: {
+      ...process.env,
+      NODE_PATH: path.join(context.extensionPath, 'node_modules')
+    }
+  };
+
   const serverOptions = {
-    run: { module: serverModule, transport: TransportKind.ipc },
-    debug: { module: serverModule, transport: TransportKind.ipc, options: debugOptions }
+    run: { 
+      module: serverModule, 
+      transport: TransportKind.ipc,
+      options: runtimeOptions
+    },
+    debug: { 
+      module: serverModule, 
+      transport: TransportKind.ipc, 
+      options: { ...debugOptions, ...runtimeOptions }
+    }
   };
 
   const clientOptions = {

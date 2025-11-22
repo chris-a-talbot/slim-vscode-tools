@@ -11,11 +11,15 @@ __tests__/**
 .gitignore
 .gitattributes
 
-# Exclude build artifacts
+# Exclude build artifacts (but keep dist/ for language server)
 out/
-dist/
 *.map
 *.ts
+# Note: dist/ is included (language server compiled output)
+# Exclude source maps from dist but keep the JS files
+dist/**/*.map
+dist/**/*.d.ts
+dist/**/*.d.ts.map
 
 # Exclude dependency-related files
 node_modules/**      # Ensure only required modules are included

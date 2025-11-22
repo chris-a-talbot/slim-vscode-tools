@@ -64,9 +64,9 @@ function loadDocumentation() {
             const eidosClasses = JSON.parse(fs.readFileSync(eidosClassesPath, "utf8"));
             classesData = { ...classesData, ...eidosClasses };
         }
-        console.log("✅ Extension loaded documentation successfully");
+        console.log("Extension loaded documentation successfully");
     } catch (error) {
-        console.error("❌ Error loading documentation:", error);
+        console.error("Error loading documentation:", error);
     }
 }
 
@@ -76,23 +76,43 @@ export function activate(context: ExtensionContext) {
     // Load documentation first
     loadDocumentation();
 
-    // The server is implemented in node
-    const serverModule = context.asAbsolutePath(
-        path.join('server', 'index.js')
-    );
+    // Use TypeScript language server
+    const serverModule = context.asAbsolutePath(path.join('dist', 'index.js'));
+
+    // Verify the server file exists
+    if (!fs.existsSync(serverModule)) {
+        const errorMsg = `SLiM Language Server not found at: ${serverModule}. Please run 'npm run compile' to build the server.`;
+        console.error(errorMsg);
+        window.showErrorMessage(errorMsg);
+        return;
+    }
 
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
     const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
 
+    // Runtime options to ensure the server can find node_modules
+    // The cwd should be the extension root so node_modules can be resolved
+    const runtimeOptions = {
+        cwd: context.extensionPath,
+        env: {
+            ...process.env,
+            NODE_PATH: path.join(context.extensionPath, 'node_modules')
+        }
+    };
+
     // If the extension is launched in debug mode then the debug server options are used
     // Otherwise the run options are used
     const serverOptions: ServerOptions = {
-        run: { module: serverModule, transport: TransportKind.ipc },
+        run: { 
+            module: serverModule, 
+            transport: TransportKind.ipc,
+            options: runtimeOptions
+        },
         debug: {
             module: serverModule,
             transport: TransportKind.ipc,
-            options: debugOptions
+            options: { ...debugOptions, ...runtimeOptions }
         }
     };
 
@@ -117,6 +137,26 @@ export function activate(context: ExtensionContext) {
         clientOptions
     );
 
+    // Add error handling for the client
+    client.onDidChangeState((event) => {
+        if (event.newState === 1) { // Starting
+            console.log('[SLiM Extension] Language server starting...');
+        } else if (event.newState === 2) { // Running
+            console.log('[SLiM Extension] Language server running');
+        } else if (event.newState === 3) { // Failed
+            console.error('[SLiM Extension] Language server failed to start');
+            window.showErrorMessage('SLiM Language Server failed to start. Check the Output panel for details.');
+        }
+    });
+
+    // Handle server errors
+    client.onDidChangeState((event) => {
+        if (event.newState === 3) { // Failed
+            const outputChannel = window.createOutputChannel('SLiM Language Server');
+            outputChannel.appendLine('Language server failed to start. Check the server logs for details.');
+        }
+    });
+
     // Register command to show function documentation
     let disposable = commands.registerCommand('slimTools.showFunctionDoc', (functionName: string) => {
         const functionInfo = functionsData[functionName];
@@ -139,7 +179,10 @@ export function activate(context: ExtensionContext) {
     context.subscriptions.push(disposable);
 
     // Start the client. This will also launch the server
-    client.start();
+    client.start().catch((error) => {
+        console.error('[SLiM Extension] Failed to start language client:', error);
+        window.showErrorMessage(`Failed to start SLiM Language Server: ${error.message}`);
+    });
 }
 
 export function deactivate(): Thenable<void> | undefined {

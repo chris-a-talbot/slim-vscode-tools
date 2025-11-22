@@ -85,7 +85,7 @@ You can build from source:
 4. Install the resulting package with `code --install-extension slim-vscode-tools-<current-version-number>-.vsix` (this assumes you've installed the `vscode` command line tool)
 
 You can use the prepackaged package from the releases:
-1. get the latest version from the [GitHub repository](https://github.com/andrewkern/slim-tools/releases)
+1. get the latest version from the [GitHub repository](https://github.com/slim-community/slim-vscode-tools/releases)
 2. Install the `.vsix` file manually with `code --install-extension slim-vscode-tools-<current-version-number>-.vsix`
 
 Optionally you can install the `.vsix` file from within `vscode` by:
