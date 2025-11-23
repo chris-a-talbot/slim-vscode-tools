@@ -215,7 +215,8 @@ export const TEXT_PROCESSING_PATTERNS = {
     RETURN_TYPE: /^\(([^)]+)\)/,
     
     // Parameter list extraction: functionName(param1, param2)
-    PARAMETER_LIST: /\((.*?)\)/,
+    // Uses non-greedy match followed by $ to get the LAST set of parentheses (not the return type)
+    PARAMETER_LIST: /\(([^)]*(?:\([^)]*\))?[^)]*)\)$/,
     
     // Optional parameter: [type name = default]
     OPTIONAL_PARAMETER: /^\[([^\]]+)\]/,
@@ -230,7 +231,8 @@ export const TEXT_PROCESSING_PATTERNS = {
     NULLABLE_TYPE: /^N[^<]*/,
     NULLABLE_OBJECT_TYPE: /^No</,
     
-    // Dollar suffix (vector type indicator)
+    // Dollar suffix (singleton type indicator)
+    // In SLiM/Eidos: $ = singleton (single value), no $ = vector (multiple values)
     DOLLAR_SUFFIX: /\$$/,
     
     // Comment line

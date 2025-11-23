@@ -164,7 +164,8 @@ exports.TEXT_PROCESSING_PATTERNS = {
     // Return type extraction from signature: (returnType) functionName(...)
     RETURN_TYPE: /^\(([^)]+)\)/,
     // Parameter list extraction: functionName(param1, param2)
-    PARAMETER_LIST: /\((.*?)\)/,
+    // Uses non-greedy match followed by $ to get the LAST set of parentheses (not the return type)
+    PARAMETER_LIST: /\(([^)]*(?:\([^)]*\))?[^)]*)\)$/,
     // Optional parameter: [type name = default]
     OPTIONAL_PARAMETER: /^\[([^\]]+)\]/,
     // Type and name from parameter: type name or type$ name or type<Generic> name
@@ -174,7 +175,8 @@ exports.TEXT_PROCESSING_PATTERNS = {
     // Nullable type check: starts with N
     NULLABLE_TYPE: /^N[^<]*/,
     NULLABLE_OBJECT_TYPE: /^No</,
-    // Dollar suffix (vector type indicator)
+    // Dollar suffix (singleton type indicator)
+    // In SLiM/Eidos: $ = singleton (single value), no $ = vector (multiple values)
     DOLLAR_SUFFIX: /\$$/,
     // Comment line
     COMMENT_LINE: /^\s*\/[\/\*]/,

@@ -1,8 +1,44 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isSingletonType = isSingletonType;
+exports.isVectorType = isVectorType;
+exports.getBaseType = getBaseType;
 exports.isNullableType = isNullableType;
+exports.parseTypeInfo = parseTypeInfo;
 exports.extractParameterTypes = extractParameterTypes;
 const regex_patterns_1 = require("../config/regex-patterns");
+/**
+ * Checks if a type string represents a singleton (has $ suffix).
+ * In SLiM/Eidos, $ indicates a singleton (single value), no $ indicates a vector.
+ * @param type - The type string to check
+ * @returns True if the type is a singleton (has $ suffix)
+ */
+function isSingletonType(type) {
+    if (!type)
+        return false;
+    return regex_patterns_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX.test(type);
+}
+/**
+ * Checks if a type string represents a vector (no $ suffix).
+ * In SLiM/Eidos, no $ indicates a vector, $ indicates a singleton.
+ * @param type - The type string to check
+ * @returns True if the type is a vector (no $ suffix)
+ */
+function isVectorType(type) {
+    if (!type)
+        return false;
+    return !regex_patterns_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX.test(type);
+}
+/**
+ * Gets the base type without the $ suffix.
+ * @param type - The type string
+ * @returns The type without $ suffix
+ */
+function getBaseType(type) {
+    if (!type)
+        return type;
+    return type.replace(regex_patterns_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX, '');
+}
 /**
  * Checks if a type string represents a nullable type.
  * Nullable types in Eidos/SLiM start with 'N' (e.g., Ni, No, Nl, Ns, Nf, Nif, Nis).
@@ -13,11 +49,34 @@ function isNullableType(type) {
     if (!type)
         return false;
     // Remove $ suffix if present (e.g., "Ni$" -> "Ni")
-    // $ indicates a vector type, but doesn't affect nullability
-    const baseType = type.replace(regex_patterns_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX, '');
+    // $ indicates a singleton, not a vector (contrary to earlier comment)
+    const baseType = getBaseType(type);
     // Check if it starts with N (nullable indicator in Eidos/SLiM)
     // Examples: Ni (nullable integer), No (nullable object), No<Subpopulation> (nullable generic)
     return regex_patterns_1.TEXT_PROCESSING_PATTERNS.NULLABLE_TYPE.test(baseType) || regex_patterns_1.TEXT_PROCESSING_PATTERNS.NULLABLE_OBJECT_TYPE.test(baseType);
+}
+/**
+ * Parses a type string into detailed type information.
+ * @param type - The type string to parse (e.g., "integer$", "object<Mutation>", "Ni")
+ * @returns TypeInfo object with parsed information
+ */
+function parseTypeInfo(type) {
+    if (!type) {
+        return {
+            baseType: '',
+            isSingleton: false,
+            isVector: false,
+            isNullable: false
+        };
+    }
+    const hasDollar = isSingletonType(type);
+    const baseType = getBaseType(type);
+    return {
+        baseType,
+        isSingleton: hasDollar,
+        isVector: !hasDollar,
+        isNullable: isNullableType(type)
+    };
 }
 /**
  * Extracts parameter types from a function/method signature.

@@ -106,25 +106,31 @@ export function validateUndefinedReferences(_text: string, lines: string[]): Dia
     );
     
     // Check subpopulations (p1, p2, etc.) with context validation
+    // Skip subpopulation validation if readFromPopulationFile() is detected
+    // (populations are assumed to be loaded from file in that case)
+    const hasReadFromPopulationFile = /readFromPopulationFile\s*\(/.test(fullText);
     const hasDynamicSubpopCreation = VALIDATION_PATTERNS.DYNAMIC_SUBPOP.test(fullText);
-    checkUndefinedReferences(
-        VALIDATION_PATTERNS.SUBPOPULATION_REF,  // Match subpopulation IDs: p1, p2, etc.
-        '(sim\\.)?addSubpop(?:Split)?',  // Match both sim.addSubpop and addSubpop
-        hasDynamicSubpopCreation,
-        TYPE_NAMES.SUBPOPULATION,
-        (line, match) => {
-            // Only warn if it looks like it's being used as a subpopulation
-            // Check surrounding context to avoid false positives (e.g., "p1" in "temp1")
-            // We want to match "p1" when it's a standalone identifier, not part of a word
-            if (match.index === undefined) return false;
-            const context = line.substring(
-                Math.max(0, match.index - LOOKAHEAD_LIMITS.CONTEXT_WINDOW), 
-                match.index + match[INDICES.SECOND].length + LOOKAHEAD_LIMITS.CONTEXT_WINDOW
-            );
-            // Ensure p1 is surrounded by non-word characters (not part of another identifier)
-            return TYPE_PATTERNS.TYPE_ID_IN_CONTEXT.test(context);
-        }
-    );
+    
+    if (!hasReadFromPopulationFile) {
+        checkUndefinedReferences(
+            VALIDATION_PATTERNS.SUBPOPULATION_REF,  // Match subpopulation IDs: p1, p2, etc.
+            '(sim\\.)?addSubpop(?:Split)?',  // Match both sim.addSubpop and addSubpop
+            hasDynamicSubpopCreation,
+            TYPE_NAMES.SUBPOPULATION,
+            (line, match) => {
+                // Only warn if it looks like it's being used as a subpopulation
+                // Check surrounding context to avoid false positives (e.g., "p1" in "temp1")
+                // We want to match "p1" when it's a standalone identifier, not part of a word
+                if (match.index === undefined) return false;
+                const context = line.substring(
+                    Math.max(0, match.index - LOOKAHEAD_LIMITS.CONTEXT_WINDOW), 
+                    match.index + match[INDICES.SECOND].length + LOOKAHEAD_LIMITS.CONTEXT_WINDOW
+                );
+                // Ensure p1 is surrounded by non-word characters (not part of another identifier)
+                return TYPE_PATTERNS.TYPE_ID_IN_CONTEXT.test(context);
+            }
+        );
+    }
     
     return diagnostics;
 }

@@ -65,7 +65,18 @@ export function validateMethodOrPropertyCall(
                 }
                 
                 const classInfo = vCtx.classesData[className];
-                return !classInfo.methods?.[methodName]; // Validate if method doesn't exist
+                // Check if method exists on the class
+                if (classInfo.methods?.[methodName]) {
+                    return false; // Method exists, skip validation
+                }
+                
+                // Check if method exists on Object base class (all objects inherit from Object)
+                const objectClass = vCtx.classesData['Object'];
+                if (objectClass && objectClass.methods?.[methodName]) {
+                    return false; // Method exists on Object, skip validation
+                }
+                
+                return true; // Method doesn't exist, validate
             },
             createDiagnostic: (methodName, ctx, vCtx) => {
                 const instanceName = ctx.match[INDICES.SECOND];
@@ -110,7 +121,18 @@ export function validateMethodOrPropertyCall(
                 }
                 
                 const classInfo = vCtx.classesData[className];
-                return !classInfo.properties?.[propertyName]; // Validate if property doesn't exist
+                // Check if property exists on the class
+                if (classInfo.properties?.[propertyName]) {
+                    return false; // Property exists, skip validation
+                }
+                
+                // Check if property exists on Object base class (all objects inherit from Object)
+                const objectClass = vCtx.classesData['Object'];
+                if (objectClass && objectClass.properties?.[propertyName]) {
+                    return false; // Property exists on Object, skip validation
+                }
+                
+                return true; // Property doesn't exist, validate
             },
             createDiagnostic: (propertyName, ctx, vCtx) => {
                 const instanceName = ctx.match[INDICES.SECOND];

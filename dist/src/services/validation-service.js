@@ -40,8 +40,12 @@ class DocumentValidator {
         let currentInstanceDefinitions = null;
         const trackingState = (0, instance_tracker_1.trackInstanceDefinitions)(this.document);
         currentInstanceDefinitions = trackingState.instanceDefinitions;
-        // Validate document-level issues
-        this.diagnostics.push(...(0, definitions_1.validateDefinitions)(this.text, this.lines), ...(0, structure_1.validateScriptStructure)(this.text, this.lines), ...(0, references_1.validateUndefinedReferences)(this.text, this.lines));
+        // Create versions of lines with comments and strings removed for validation
+        // This prevents false positives from code-like content in comments/strings
+        const linesWithoutCommentsAndStrings = this.lines.map(line => (0, text_processing_1.removeCommentsAndStringsFromLine)(line));
+        const textWithoutCommentsAndStrings = linesWithoutCommentsAndStrings.join('\n');
+        // Validate document-level issues (using cleaned versions)
+        this.diagnostics.push(...(0, definitions_1.validateDefinitions)(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings), ...(0, structure_1.validateScriptStructure)(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings), ...(0, references_1.validateUndefinedReferences)(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings));
         // Validate each line
         this.lines.forEach((line, lineIndex) => {
             this.validateLine(line, lineIndex, currentInstanceDefinitions);
@@ -77,20 +81,26 @@ class DocumentValidator {
         }
     }
     validateSemanticAspects(line, lineIndex, instanceDefinitions) {
+        // Remove comments and strings from line before validation to avoid false positives
+        const lineWithoutCommentsAndStrings = (0, text_processing_1.removeCommentsAndStringsFromLine)(line);
+        // Skip validation if the entire line is now empty (was a comment)
+        if (!lineWithoutCommentsAndStrings.trim()) {
+            return;
+        }
         const functionsData = this.documentationService.getFunctions();
         const classesData = this.documentationService.getClasses();
         const callbacksData = this.documentationService.getCallbacks();
         // Validate method/property calls if instance definitions are available
         if (instanceDefinitions && classesData) {
-            this.diagnostics.push(...(0, method_property_1.validateMethodOrPropertyCall)(line, lineIndex, instanceDefinitions, classesData));
+            this.diagnostics.push(...(0, method_property_1.validateMethodOrPropertyCall)(lineWithoutCommentsAndStrings, lineIndex, instanceDefinitions, classesData));
         }
         // Validate function calls if callbacks data is available
         if (callbacksData) {
-            this.diagnostics.push(...(0, function_calls_1.validateFunctionCalls)(line, lineIndex, functionsData, callbacksData));
+            this.diagnostics.push(...(0, function_calls_1.validateFunctionCalls)(lineWithoutCommentsAndStrings, lineIndex, functionsData, callbacksData));
         }
         // Validate null assignments if all required data is available
         if (instanceDefinitions) {
-            this.diagnostics.push(...(0, null_assignments_1.validateNullAssignments)(line, lineIndex, functionsData, classesData, instanceDefinitions));
+            this.diagnostics.push(...(0, null_assignments_1.validateNullAssignments)(lineWithoutCommentsAndStrings, lineIndex, functionsData, classesData, instanceDefinitions));
         }
     }
     validateUnclosedBraces() {

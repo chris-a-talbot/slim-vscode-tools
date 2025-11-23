@@ -10,7 +10,8 @@ export type { ParseState, ParseOptions, BraceCounts };
 export declare function expandTypeAbbreviations(text: string): string;
 /**
  * Cleans type names in signatures and descriptions by removing trailing dollar signs.
- * Eidos/SLiM uses $ to indicate singleton types, but we remove it for clarity.
+ * In SLiM/Eidos, $ indicates singleton types (single value), while no $ indicates vectors.
+ * We remove $ for display clarity, but preserve it internally for type inference.
  * Also expands type abbreviations for better readability.
  * @param text - The text to clean
  * @returns Text with $ removed from type names and abbreviations expanded
@@ -104,4 +105,19 @@ export declare function countParenthesesIgnoringStringsAndComments(code: string)
  * @returns Code with strings replaced by placeholders
  */
 export declare function removeStringsFromLine(line: string): string;
+/**
+ * Removes comments from a line of code.
+ * Handles both single-line comments (//) and multi-line comments (/* *\/).
+ * Does not remove comment markers inside strings.
+ * @param line - The line to process
+ * @returns The line with comments removed
+ */
+export declare function removeCommentsFromLine(line: string): string;
+/**
+ * Removes both comments and strings from a line of code.
+ * Replaces strings with placeholders to preserve character positions.
+ * @param line - The line to process
+ * @returns The line with comments removed and strings replaced with spaces
+ */
+export declare function removeCommentsAndStringsFromLine(line: string): string;
 //# sourceMappingURL=text-processing.d.ts.map

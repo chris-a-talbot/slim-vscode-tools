@@ -10,6 +10,8 @@ exports.parseCodeWithStringsAndComments = parseCodeWithStringsAndComments;
 exports.countBracesIgnoringStringsAndComments = countBracesIgnoringStringsAndComments;
 exports.countParenthesesIgnoringStringsAndComments = countParenthesesIgnoringStringsAndComments;
 exports.removeStringsFromLine = removeStringsFromLine;
+exports.removeCommentsFromLine = removeCommentsFromLine;
+exports.removeCommentsAndStringsFromLine = removeCommentsAndStringsFromLine;
 /**
  * Expands Eidos/SLiM type abbreviations to readable base type names.
  * Type abbreviations: N = nullable, i = integer, o = object, l = logical, s = string, f = float
@@ -37,7 +39,8 @@ function expandTypeAbbreviations(text) {
 }
 /**
  * Cleans type names in signatures and descriptions by removing trailing dollar signs.
- * Eidos/SLiM uses $ to indicate singleton types, but we remove it for clarity.
+ * In SLiM/Eidos, $ indicates singleton types (single value), while no $ indicates vectors.
+ * We remove $ for display clarity, but preserve it internally for type inference.
  * Also expands type abbreviations for better readability.
  * @param text - The text to clean
  * @returns Text with $ removed from type names and abbreviations expanded
@@ -336,6 +339,125 @@ function removeStringsFromLine(line) {
             result += char;
             i++;
         }
+    }
+    return result;
+}
+/**
+ * Removes comments from a line of code.
+ * Handles both single-line comments (//) and multi-line comments (/* *\/).
+ * Does not remove comment markers inside strings.
+ * @param line - The line to process
+ * @returns The line with comments removed
+ */
+function removeCommentsFromLine(line) {
+    let result = '';
+    let inString = false;
+    let stringChar = null;
+    let i = 0;
+    while (i < line.length) {
+        const char = line[i];
+        const nextChar = i + 1 < line.length ? line[i + 1] : null;
+        const isEscaped = isEscapedQuote(line, i);
+        // Track string state
+        if (!inString && (char === '"' || char === "'") && !isEscaped) {
+            inString = true;
+            stringChar = char;
+            result += char;
+            i++;
+            continue;
+        }
+        if (inString && char === stringChar && !isEscaped) {
+            inString = false;
+            stringChar = null;
+            result += char;
+            i++;
+            continue;
+        }
+        // If we're in a string, just copy the character
+        if (inString) {
+            result += char;
+            i++;
+            continue;
+        }
+        // Check for single-line comment
+        if (char === '/' && nextChar === '/') {
+            // Rest of line is a comment, stop here
+            break;
+        }
+        // Check for multi-line comment start
+        if (char === '/' && nextChar === '*') {
+            // Skip until we find */
+            i += 2;
+            while (i < line.length - 1) {
+                if (line[i] === '*' && line[i + 1] === '/') {
+                    i += 2;
+                    break;
+                }
+                i++;
+            }
+            continue;
+        }
+        result += char;
+        i++;
+    }
+    return result;
+}
+/**
+ * Removes both comments and strings from a line of code.
+ * Replaces strings with placeholders to preserve character positions.
+ * @param line - The line to process
+ * @returns The line with comments removed and strings replaced with spaces
+ */
+function removeCommentsAndStringsFromLine(line) {
+    let result = '';
+    let inString = false;
+    let stringChar = null;
+    let i = 0;
+    while (i < line.length) {
+        const char = line[i];
+        const nextChar = i + 1 < line.length ? line[i + 1] : null;
+        const isEscaped = isEscapedQuote(line, i);
+        // Track string state
+        if (!inString && (char === '"' || char === "'") && !isEscaped) {
+            inString = true;
+            stringChar = char;
+            result += ' '; // Replace string quote with space
+            i++;
+            continue;
+        }
+        if (inString && char === stringChar && !isEscaped) {
+            inString = false;
+            stringChar = null;
+            result += ' '; // Replace closing quote with space
+            i++;
+            continue;
+        }
+        // If we're in a string, replace with spaces to preserve positions
+        if (inString) {
+            result += ' ';
+            i++;
+            continue;
+        }
+        // Check for single-line comment
+        if (char === '/' && nextChar === '/') {
+            // Rest of line is a comment, stop here
+            break;
+        }
+        // Check for multi-line comment start
+        if (char === '/' && nextChar === '*') {
+            // Skip until we find */
+            i += 2;
+            while (i < line.length - 1) {
+                if (line[i] === '*' && line[i + 1] === '/') {
+                    i += 2;
+                    break;
+                }
+                i++;
+            }
+            continue;
+        }
+        result += char;
+        i++;
     }
     return result;
 }
