@@ -8,6 +8,10 @@ const hover_1 = require("../providers/hover");
 const completion_1 = require("../providers/completion");
 const signature_help_1 = require("../providers/signature-help");
 const formatting_1 = require("../providers/formatting");
+const code_actions_1 = require("../providers/code-actions");
+const definition_1 = require("../providers/definition");
+const inlay_hints_1 = require("../providers/inlay-hints");
+const references_1 = require("../providers/references");
 const logger_1 = require("../utils/logger");
 /**
  * Registers all language server handlers and providers.
@@ -31,7 +35,15 @@ function registerHandlers(context) {
                 signatureHelpProvider: {
                     triggerCharacters: ["(", ",", " "],
                     retriggerCharacters: [",", ")"]
-                }
+                },
+                codeActionProvider: {
+                    codeActionKinds: [
+                        'quickfix',
+                        'refactor'
+                    ]
+                },
+                definitionProvider: true,
+                inlayHintProvider: true
             }
         };
         return result;
@@ -53,11 +65,9 @@ function registerHandlers(context) {
     (0, completion_1.registerCompletionProvider)(context);
     (0, signature_help_1.registerSignatureHelpProvider)(context);
     (0, formatting_1.registerFormattingProvider)(context);
-    // Register references handler (placeholder for future implementation)
-    connection.onReferences((_params) => {
-        // TODO: Implement reference finding
-        const references = [];
-        return references;
-    });
+    (0, code_actions_1.registerCodeActionProvider)(context);
+    (0, definition_1.registerDefinitionProvider)(context);
+    (0, inlay_hints_1.registerInlayHintsProvider)(context);
+    (0, references_1.registerReferencesProvider)(context);
 }
 //# sourceMappingURL=handlers.js.map

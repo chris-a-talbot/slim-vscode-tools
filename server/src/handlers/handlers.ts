@@ -1,10 +1,14 @@
-import { InitializeParams, InitializeResult, ServerCapabilities, ReferenceParams, Location, TextDocumentSyncKind, TextDocumentChangeEvent } from 'vscode-languageserver';
+import { InitializeParams, InitializeResult, ServerCapabilities, TextDocumentSyncKind, TextDocumentChangeEvent } from 'vscode-languageserver';
 import { sendDiagnostics } from '../utils/diagnostic-factory';
 import { registerDocumentSymbolsProvider } from '../providers/document-symbols';
 import { registerHoverProvider } from '../providers/hover';
 import { registerCompletionProvider } from '../providers/completion';
 import { registerSignatureHelpProvider } from '../providers/signature-help';
 import { registerFormattingProvider } from '../providers/formatting';
+import { registerCodeActionProvider } from '../providers/code-actions';
+import { registerDefinitionProvider } from '../providers/definition';
+import { registerInlayHintsProvider } from '../providers/inlay-hints';
+import { registerReferencesProvider } from '../providers/references';
 import { LanguageServerContext } from '../types';
 import { logErrorWithStack } from '../utils/logger';
 
@@ -31,7 +35,15 @@ export function registerHandlers(context: LanguageServerContext): void {
                 signatureHelpProvider: {   
                     triggerCharacters: ["(", ",", " "],
                     retriggerCharacters: [",", ")"]
-                }
+                },
+                codeActionProvider: {
+                    codeActionKinds: [
+                        'quickfix',
+                        'refactor'
+                    ]
+                },
+                definitionProvider: true,
+                inlayHintProvider: true
             } as ServerCapabilities
         };
         return result;
@@ -56,11 +68,8 @@ export function registerHandlers(context: LanguageServerContext): void {
     registerCompletionProvider(context);
     registerSignatureHelpProvider(context);
     registerFormattingProvider(context);
-
-    // Register references handler (placeholder for future implementation)
-    connection.onReferences((_params: ReferenceParams): Location[] => {
-        // TODO: Implement reference finding
-        const references: Location[] = [];
-        return references;
-    });
+    registerCodeActionProvider(context);
+    registerDefinitionProvider(context);
+    registerInlayHintsProvider(context);
+    registerReferencesProvider(context);
 }
