@@ -12,6 +12,8 @@ const code_actions_1 = require("../providers/code-actions");
 const definition_1 = require("../providers/definition");
 const inlay_hints_1 = require("../providers/inlay-hints");
 const references_1 = require("../providers/references");
+const rename_1 = require("../providers/rename");
+const workspace_symbols_1 = require("../providers/workspace-symbols");
 const logger_1 = require("../utils/logger");
 /**
  * Registers all language server handlers and providers.
@@ -43,7 +45,11 @@ function registerHandlers(context) {
                     ]
                 },
                 definitionProvider: true,
-                inlayHintProvider: true
+                inlayHintProvider: true,
+                renameProvider: {
+                    prepareProvider: true
+                },
+                workspaceSymbolProvider: true
             }
         };
         return result;
@@ -69,5 +75,7 @@ function registerHandlers(context) {
     (0, definition_1.registerDefinitionProvider)(context);
     (0, inlay_hints_1.registerInlayHintsProvider)(context);
     (0, references_1.registerReferencesProvider)(context);
+    (0, rename_1.registerRenameProvider)(context);
+    (0, workspace_symbols_1.registerWorkspaceSymbolsProvider)(context);
 }
 //# sourceMappingURL=handlers.js.map

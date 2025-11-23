@@ -9,6 +9,8 @@ import { registerCodeActionProvider } from '../providers/code-actions';
 import { registerDefinitionProvider } from '../providers/definition';
 import { registerInlayHintsProvider } from '../providers/inlay-hints';
 import { registerReferencesProvider } from '../providers/references';
+import { registerRenameProvider } from '../providers/rename';
+import { registerWorkspaceSymbolsProvider } from '../providers/workspace-symbols';
 import { LanguageServerContext } from '../types';
 import { logErrorWithStack } from '../utils/logger';
 
@@ -43,7 +45,11 @@ export function registerHandlers(context: LanguageServerContext): void {
                     ]
                 },
                 definitionProvider: true,
-                inlayHintProvider: true
+                inlayHintProvider: true,
+                renameProvider: {
+                    prepareProvider: true
+                },
+                workspaceSymbolProvider: true
             } as ServerCapabilities
         };
         return result;
@@ -72,4 +78,6 @@ export function registerHandlers(context: LanguageServerContext): void {
     registerDefinitionProvider(context);
     registerInlayHintsProvider(context);
     registerReferencesProvider(context);
+    registerRenameProvider(context);
+    registerWorkspaceSymbolsProvider(context);
 }

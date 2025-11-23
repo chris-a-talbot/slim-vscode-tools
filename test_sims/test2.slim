@@ -1,3 +1,7 @@
+// Based on demo-genetic evolutionary rescue model by Julian Beaman & Corey Bradshaw
+// Original: https://github.com/cjabradshaw/demo-genetic/blob/main/scripts/rescue-scenario-4_model.txt
+// Modified by Chris Talbot to update to SLiM v5 and enable RL training
+
 initialize() {
     initializeSLiMModelType("nonWF");
 
@@ -5,7 +9,6 @@ initialize() {
     defineConstant("Kp1", 2000);
     defineConstant("Kp2", 500);
     defineConstant("N", 2);
-    // Note: nMigrants is now determined dynamically by the RL agent
 
     // Survival table
     defineConstant("L",c(1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0));
@@ -48,7 +51,6 @@ reproduction() {
 
 early() {
     // --- Demography / Survival Logic ---
-    // (Keeping your provided logic, assuming you are aware of the high variance issues)
 
     // P1 Survival
     inds_p1 = p1.individuals;
@@ -118,8 +120,6 @@ early() {
         if (num_migrants > 0) {
             migrants = sample(p1.individuals, num_migrants);
             p2.takeMigrants(migrants);
-            // We don't print here to avoid confusing the parser,
-            // but you could log this internally.
         }
     }
 }
@@ -154,10 +154,6 @@ early() {
 
             // VITAL: Set a new random seed so the next run is different
             setSeed(rdunif(1, 0, asInteger(2^62) - 1));
-
-            // VITAL: Clear any global variables you used for tracking this episode
-            // (e.g. if you tracked total migrants in a global variable, reset it to 0 here)
-
         } else if (instruction == "STOP") {
             // End the SLiM process cleanly
             sim.simulationFinished();
