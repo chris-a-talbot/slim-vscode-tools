@@ -7,9 +7,15 @@ import { registerDefinitionProvider } from '../providers/definition';
 import { registerReferencesProvider } from '../providers/references';
 import { LanguageServerContext } from '../config/types';
 import { logErrorWithStack } from '../utils/logger';
+import { registerSignatureHelpProvider } from '../providers/signature-help';
+import { registerCodeActionProvider } from '../providers/code-actions';
 
 export function registerHandlers(context: LanguageServerContext): void {
     const { connection, documents, validationService } = context;
+    
+    // Debounce timer for validation - waits for user to pause typing
+    let validationTimer: NodeJS.Timeout | null = null;
+    const VALIDATION_DELAY_MS = 350; // Wait 350ms after last keystroke
     
     // Register initialize handler
     connection.onInitialize((_params: InitializeParams): InitializeResult => {
@@ -24,6 +30,11 @@ export function registerHandlers(context: LanguageServerContext): void {
                 referencesProvider: true,
                 documentSymbolProvider: true,
                 definitionProvider: true,
+                signatureHelpProvider: {
+                    triggerCharacters: ["(", ",", " "],
+                    retriggerCharacters: [",", ")"]
+                },
+                codeActionProvider: true,
             } as ServerCapabilities
         };
         return result;
@@ -31,15 +42,23 @@ export function registerHandlers(context: LanguageServerContext): void {
 
     // Note: onInitialized handler is set up in index.ts to initialize logger
 
-    // Register document change handler (for validation)
+    // Register document change handler (for validation with debouncing)
     documents.onDidChangeContent((change: TextDocumentChangeEvent<any>) => {
-        validationService.validate(change.document).then((diagnostics) => {
-            sendDiagnostics(connection, change.document.uri, diagnostics);
-        }).catch((error: unknown) => {
-            logErrorWithStack(error, 'Error during validation');
-            // Send empty diagnostics on error to clear previous errors
-            sendDiagnostics(connection, change.document.uri, []);
-        });
+        // Clear any pending validation
+        if (validationTimer) {
+            clearTimeout(validationTimer);
+        }
+        
+        // Schedule validation after user stops typing
+        validationTimer = setTimeout(() => {
+            validationService.validate(change.document).then((diagnostics) => {
+                sendDiagnostics(connection, change.document.uri, diagnostics);
+            }).catch((error: unknown) => {
+                logErrorWithStack(error, 'Error during validation');
+                // Send empty diagnostics on error to clear previous errors
+                sendDiagnostics(connection, change.document.uri, []);
+            });
+        }, VALIDATION_DELAY_MS);
     });
 
     // Register all providers
@@ -48,4 +67,6 @@ export function registerHandlers(context: LanguageServerContext): void {
     registerCompletionProvider(context);
     registerDefinitionProvider(context);
     registerReferencesProvider(context);
+    registerSignatureHelpProvider(context);
+    registerCodeActionProvider(context);
 }

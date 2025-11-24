@@ -210,6 +210,11 @@ Initial release of `slim-tools` with the following features:
 - - `initialization-rules.ts` ensures the simulation is properly initialized
 - - `interaction-queries.ts` ensures interactions are only used after they're evaluated
 
+## [0.0.14]
+- Added the signature help provider (`signature-help.ts`) to provide hints on parameters in functions/methods
+- Added the code actions provider (`code-actions.ts`) to provide quick fixes for common errors and simple refactorings
+- Improved the validation service to avoid throwing errors while a line is being typed
+
 ## Development notes
 
 1. First install the dependencies with `npm install`

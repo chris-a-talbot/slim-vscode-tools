@@ -88,7 +88,10 @@ export class ValidationService {
         // Validate semicolon requirement
         const semicolonResult = shouldHaveSemicolon(trimmedLine, this.parenBalance);
         this.parenBalance = semicolonResult.parenBalance;
-        if (semicolonResult.shouldMark) {
+        
+        // Only show semicolon warnings if the line looks "complete"
+        // (avoid warnings on obviously incomplete code)
+        if (semicolonResult.shouldMark && !this.lineAppearsIncomplete(trimmedLine)) {
             this.diagnostics.push(createDiagnostic(
                 DiagnosticSeverity.Warning,
                 lineIndex,
@@ -192,5 +195,44 @@ export class ValidationService {
         
         return userFunctions;
     }
+
+    /**
+     * Check if a line appears incomplete (still being typed)
+     * This helps avoid false warnings on partially-typed code
+     */
+    private lineAppearsIncomplete(line: string): boolean {
+        // Line ends with an operator (likely continuing on next line or still typing)
+        if (/[+\-*/%=<>!&|,]\s*$/.test(line)) {
+            return true;
+        }
+        
+        // Line ends with a dot (method chaining in progress)
+        if (/\.\s*$/.test(line)) {
+            return true;
+        }
+        
+        // Line has unclosed parentheses or brackets
+        const openParens = (line.match(/\(/g) || []).length;
+        const closeParens = (line.match(/\)/g) || []).length;
+        const openBrackets = (line.match(/\[/g) || []).length;
+        const closeBrackets = (line.match(/\]/g) || []).length;
+        
+        if (openParens > closeParens || openBrackets > closeBrackets) {
+            return true;
+        }
+        
+        // Line looks like it's starting a declaration/assignment but incomplete
+        if (/^\s*\w+\s*=\s*$/.test(line)) {
+            return true;
+        }
+        
+        // Line ends with function call opening but no closing paren
+        if (/\w+\s*\(\s*$/.test(line)) {
+            return true;
+        }
+        
+        return false;
+    }
 }
+
 
