@@ -7,6 +7,10 @@ import { validateScriptStructure, shouldHaveSemicolon } from '../validation/stru
 import { validateUndefinedReferences } from '../validation/references';
 import { validateMethodOrPropertyCall } from '../validation/method-property';
 import { validateFunctionCalls } from '../validation/function-calls';
+import { validateNullAssignments } from '../validation/null-assignments';
+import { validateContextRestrictions } from '../validation/context-restrictions';
+import { validateInitializationRules } from '../validation/initialization-rules';
+import { validateInteractionQueries } from '../validation/interaction-queries';
 import { countBracesIgnoringStringsAndComments, removeCommentsAndStringsFromLine } from '../utils/text-processing';
 import { EVENT_PATTERNS, DEFINITION_PATTERNS } from '../config/config';
 import { ERROR_MESSAGES } from '../config/config';
@@ -50,11 +54,13 @@ export class ValidationService {
             ...validateDefinitions(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings),
             ...validateScriptStructure(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings),
             ...validateUndefinedReferences(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings),
+            ...validateInitializationRules(this.text, this.lines),
+            ...validateInteractionQueries(linesWithoutCommentsAndStrings, trackingState)
         );
 
         // Validate each line
         this.lines.forEach((line, lineIndex) => {
-            this.validateLine(line, lineIndex, currentInstanceDefinitions, userDefinedFunctions);
+            this.validateLine(line, lineIndex, currentInstanceDefinitions, trackingState, userDefinedFunctions);
         });
 
         // Validate unclosed braces
@@ -67,7 +73,8 @@ export class ValidationService {
         line: string,
         lineIndex: number,
         instanceDefinitions: Record<string, string> | null,
-        userDefinedFunctions: Set<string>,
+        trackingState: TrackingState,
+        userDefinedFunctions: Set<string>
     ): void {
         const trimmedLine = line.trim();
         if (!trimmedLine || trimmedLine.startsWith('//')) return;
@@ -92,7 +99,7 @@ export class ValidationService {
         }
         
         // Validate semantic aspects
-        this.validateSemanticAspects(line, lineIndex, instanceDefinitions, userDefinedFunctions);
+        this.validateSemanticAspects(line, lineIndex, instanceDefinitions, trackingState, userDefinedFunctions);
     }
 
     private validateBraceBalance(line: string, lineIndex: number, isSlimBlock: boolean): void {
@@ -115,7 +122,8 @@ export class ValidationService {
         line: string,
         lineIndex: number,
         instanceDefinitions: Record<string, string> | null,
-        userDefinedFunctions: Set<string>,
+        trackingState: TrackingState,
+        userDefinedFunctions: Set<string>
     ): void {
         // Remove comments and strings from line before validation to avoid false positives
         const lineWithoutCommentsAndStrings = removeCommentsAndStringsFromLine(line);
@@ -138,21 +146,14 @@ export class ValidationService {
         if (callbacksData) {
             this.diagnostics.push(...validateFunctionCalls(lineWithoutCommentsAndStrings, lineIndex, functionsData, callbacksData, userDefinedFunctions));
         }
-    }
-    
-    private trackUserDefinedFunctions(lines: string[]): Set<string> {
-        const userFunctions = new Set<string>();
-        const pattern = DEFINITION_PATTERNS.USER_FUNCTION;
         
-        for (const line of lines) {
-            pattern.lastIndex = 0;
-            const match = pattern.exec(line);
-            if (match) {
-                userFunctions.add(match[1]);
-            }
+        // Validate null assignments if all required data is available
+        if (instanceDefinitions) {
+            this.diagnostics.push(...validateNullAssignments(lineWithoutCommentsAndStrings, lineIndex, functionsData, classesData, instanceDefinitions));
         }
         
-        return userFunctions;
+        // Validate context-specific restrictions (callbacks, model types)
+        this.diagnostics.push(...validateContextRestrictions(lineWithoutCommentsAndStrings, lineIndex, trackingState));
     }
 
     private validateUnclosedBraces(): void {
@@ -175,6 +176,21 @@ export class ValidationService {
             this.lines[this.lastOpenBraceLine].length,
             ERROR_MESSAGES.UNCLOSED_BRACE
         ));
+    }
+
+    private trackUserDefinedFunctions(lines: string[]): Set<string> {
+        const userFunctions = new Set<string>();
+        const pattern = DEFINITION_PATTERNS.USER_FUNCTION;
+        
+        for (const line of lines) {
+            pattern.lastIndex = 0;
+            const match = pattern.exec(line);
+            if (match) {
+                userFunctions.add(match[1]);
+            }
+        }
+        
+        return userFunctions;
     }
 }
 

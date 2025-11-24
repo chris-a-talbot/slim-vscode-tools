@@ -95,3 +95,10 @@ Initial release of `slim-tools` with the following features:
 - - `references.ts` ensures that references to objects are defined before use
 - - `structure.ts` ensures that the overall structure of the simulation is valid
 - Improved markdown formatting for hover info
+
+## [0.0.13] (CAT)
+- Extended the validation service with more SLiM-specific error checking
+- - `null-assignments.ts` checks for errors involving NULL assignment to non-nullable fields
+- - `context-restrictions.ts` checks for functions being used in the wrong context, e.g. the wrong callback or wrong WF/nonWF mode
+- - `initialization-rules.ts` ensures the simulation is properly initialized
+- - `interaction-queries.ts` ensures interactions are only used after they're evaluated
