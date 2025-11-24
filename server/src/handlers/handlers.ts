@@ -7,6 +7,9 @@ import {
 import { registerHoverProvider } from '../providers/hover';
 import { LanguageServerContext } from '../config/types';
 import { registerCompletionProvider } from '../providers/completion';
+import { registerDocumentSymbolsProvider } from '../providers/document-symbols';
+import { registerDefinitionProvider } from '../providers/definition';
+import { registerReferencesProvider } from '../providers/references';
 
 export function registerHandlers(context: LanguageServerContext): void {
     const { connection } = context;
@@ -21,15 +24,14 @@ export function registerHandlers(context: LanguageServerContext): void {
                     resolveProvider: true,
                     triggerCharacters: ['.'],
                 },
+                documentSymbolProvider: true,
+                definitionProvider: true,
+                referencesProvider: true,
                 // TODO: Implement additional providers
                 // signatureHelpProvider: {
                 //     triggerCharacters: ['(', ',', ' '],
                 //     retriggerCharacters: [',', ')'],
                 // },
-                // definitionProvider: true,
-                // referencesProvider: true,
-                // documentSymbolProvider: true,
-                // documentFormattingProvider: true,
                 // codeActionProvider: {
                 //     codeActionKinds: ['quickfix', 'refactor'],
                 // },
@@ -50,4 +52,7 @@ export function registerHandlers(context: LanguageServerContext): void {
     // Register all providers
     registerHoverProvider(context);
     registerCompletionProvider(context);
+    registerDocumentSymbolsProvider(context);
+    registerDefinitionProvider(context);
+    registerReferencesProvider(context);
 }

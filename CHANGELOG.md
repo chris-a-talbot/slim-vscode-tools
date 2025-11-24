@@ -79,3 +79,9 @@ Initial release of `slim-tools` with the following features:
 - Added completion service provider for code completion suggestions
 - - Provider is stored in `completion.ts`
 - - CompletionService (`completion-service.ts`) does the heavy lifting for suggesting completion options
+
+## [0.0.11] (CAT)
+- Added simple document symbols provider for document outline view
+- - Provider and implementation is stored in `document-symbols.ts`
+- Add go-to-definitions and find-references services
+- - Provider and implementation stored in `definition.ts` and `references.ts` respectively
