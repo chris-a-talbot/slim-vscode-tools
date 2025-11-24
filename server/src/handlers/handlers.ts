@@ -11,6 +11,11 @@ import { registerSignatureHelpProvider } from '../providers/signature-help';
 import { registerCodeActionProvider } from '../providers/code-actions';
 import { registerFormattingProvider } from '../providers/formatting';
 import { registerRenameProvider } from '../providers/rename';
+import { registerWorkspaceSymbolsProvider } from '../providers/workspace-symbols';
+import { registerInlayHintsProvider } from '../providers/inlay-hints';
+import { registerCodeLensProvider } from '../providers/code-lens';
+import { registerDocumentHighlightsProvider } from '../providers/document-highlights';
+import { registerFoldingRangeProvider } from '../providers/folding-range';
 
 export function registerHandlers(context: LanguageServerContext): void {
     const { connection, documents, validationService } = context;
@@ -36,14 +41,28 @@ export function registerHandlers(context: LanguageServerContext): void {
                     triggerCharacters: ["(", ",", " "],
                     retriggerCharacters: [",", ")"]
                 },
-                codeActionProvider: true,
+                codeActionProvider: {
+                    codeActionKinds: [
+                        'quickfix',
+                        'refactor'
+                    ]
+                },
                 documentFormattingProvider: true,
                 documentRangeFormattingProvider: true,
                 documentOnTypeFormattingProvider: {
                     firstTriggerCharacter: '\n',
                     moreTriggerCharacter: ['}']
                 },
-                renameProvider: true,
+                renameProvider: {
+                    prepareProvider: true
+                },
+                workspaceSymbolProvider: true,
+                inlayHintProvider: true,
+                codeLensProvider: {
+                    resolveProvider: false
+                },
+                documentHighlightProvider: true,
+                foldingRangeProvider: true,
             } as ServerCapabilities
         };
         return result;
@@ -80,4 +99,9 @@ export function registerHandlers(context: LanguageServerContext): void {
     registerCodeActionProvider(context);
     registerFormattingProvider(context);
     registerRenameProvider(context);
+    registerWorkspaceSymbolsProvider(context);
+    registerInlayHintsProvider(context);
+    registerCodeLensProvider(context);
+    registerDocumentHighlightsProvider(context);
+    registerFoldingRangeProvider(context);
 }

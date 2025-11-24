@@ -2,7 +2,7 @@
   "name": "slim-vscode-tools",
   "displayName": "slim-tools",
   "description": "language extension for the SLiM simulation package",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "icon": "slim_icon.png",
   "publisher": "slim-community",
   "repository": {
@@ -61,6 +61,36 @@
           "type": "string",
           "default": "slim",
           "description": "Path to the SLiM interpreter (e.g., /usr/local/bin/slim or C:\\\\Users\\\\YourName\\\\slim.exe)"
+        },
+        "slimTools.inlayHints.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inlay hints to show inferred types for variables"
+        },
+        "slimTools.inlayHints.showVariableTypes": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show type hints for variable assignments"
+        },
+        "slimTools.inlayHints.showLoopVariableTypes": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show type hints for loop variables"
+        },
+        "slimTools.codeLens.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable code lens to show reference counts and tick information"
+        },
+        "slimTools.codeLens.showReferences": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show reference counts for functions, constants, and definitions"
+        },
+        "slimTools.codeLens.showCallbackInfo": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show tick information for callbacks"
         }
       }
     },

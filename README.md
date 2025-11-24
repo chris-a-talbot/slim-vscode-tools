@@ -102,6 +102,16 @@ This extension contributes the following settings:
 
 * `slimTools.slimInterpreterPath`: Path to the SLiM interpreter (e.g., `/usr/local/bin/slim` or `C:\\Users\\YourName\\slim.exe`).
 
+### Inlay Hints Settings
+* `slimTools.inlayHints.enabled`: Enable/disable inlay hints to show inferred types for variables (default: `true`)
+* `slimTools.inlayHints.showVariableTypes`: Show type hints for variable assignments (default: `true`)
+* `slimTools.inlayHints.showLoopVariableTypes`: Show type hints for loop variables (default: `true`)
+
+### Code Lens Settings
+* `slimTools.codeLens.enabled`: Enable/disable code lens to show reference counts and tick information (default: `true`)
+* `slimTools.codeLens.showReferences`: Show reference counts for functions, constants, and definitions (default: `true`)
+* `slimTools.codeLens.showCallbackInfo`: Show tick information for callbacks (default: `true`)
+
 ## Diagnostic Features
 
 The extension provides real-time diagnostic feedback for:
@@ -218,6 +228,13 @@ Initial release of `slim-tools` with the following features:
 ## [0.0.15]
 - Added the rename provider (`rename.ts`) to manage refactoring in large documents/codebases
 - Added the formatting provider (`formatting.ts`) for formatting of documents and code chunks
+
+## [0.0.16]
+- Added workspace symbol provider (`workspace-symbols.ts`) to allow for navigation across whole workspaces
+- Added inlay hints provider (`inlay-hints.ts`) for type hints inlayed alongside code (toggleable via settings)
+- Added code lens provider (`code-lens.ts`) for inline, clickable annotations above certain items (toggleable via settings)
+- Added document highlighting provider (`document-highlights.ts`) to highlight occurrences of the currently highlighted object
+- Added folding range provider (`folding-range.ts`) to allow SLiM-aware folding of callbacks and other code blocks
 
 ## Development notes
 

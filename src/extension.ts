@@ -113,7 +113,28 @@ export function activate(context: ExtensionContext) {
         documentSelector: [{ scheme: 'file', language: 'slim' }],
         synchronize: {
             // Notify the server about file changes to '.slim' files contained in the workspace
-            fileEvents: workspace.createFileSystemWatcher('**/.clientrc'),
+            fileEvents: workspace.createFileSystemWatcher('**/*.slim'),
+        },
+        // Middleware to control optional features
+        middleware: {
+            // Inlay hints can be toggled via user settings
+            provideInlayHints: async (document, viewPort, token, next) => {
+                const config = workspace.getConfiguration('slimTools');
+                const inlayHintsEnabled = config.get<boolean>('inlayHints.enabled', true);
+                if (!inlayHintsEnabled) {
+                    return [];
+                }
+                return await next(document, viewPort, token);
+            },
+            // Code lens can be toggled via user settings
+            provideCodeLenses: async (document, token, next) => {
+                const config = workspace.getConfiguration('slimTools');
+                const codeLensEnabled = config.get<boolean>('codeLens.enabled', true);
+                if (!codeLensEnabled) {
+                    return [];
+                }
+                return await next(document, token);
+            },
         },
     };
 

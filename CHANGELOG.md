@@ -111,3 +111,10 @@ Initial release of `slim-tools` with the following features:
 ## [0.0.15] (CAT)
 - Added the rename provider (`rename.ts`) to manage refactoring in large documents/codebases
 - Added the formatting provider (`formatting.ts`) for formatting of documents and code chunks
+
+## [0.0.16] (CAT)
+- Added workspace symbol provider (`workspace-symbols.ts`) to allow for navigation across whole workspaces
+- Added inlay hints provider (`inlay-hints.ts`) for type hints inlayed alongside code (toggleable via settings)
+- Added code lens provider (`code-lens.ts`) for inline, clickable annotations above certain items (toggleable via settings)
+- Added document highlighting provider (`document-highlights.ts`) to highlight occurrences of the currently highlighted object
+- Added folding range provider (`folding-range.ts`) to allow SLiM-aware folding of callbacks and other code blocks

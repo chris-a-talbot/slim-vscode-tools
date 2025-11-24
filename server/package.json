@@ -1,6 +1,6 @@
 {
   "name": "server",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Language server for SLiM VSCode extension",
   "main": "index.ts",
   "scripts": {
