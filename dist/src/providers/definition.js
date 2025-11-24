@@ -1,8 +1,4 @@
 "use strict";
-// ============================================================================
-// DEFINITION PROVIDER
-// Provides "Go to Definition" functionality for variables, functions, and types
-// ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerDefinitionProvider = registerDefinitionProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");

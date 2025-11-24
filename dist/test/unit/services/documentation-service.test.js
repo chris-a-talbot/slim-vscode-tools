@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const vitest_1 = require("vitest");
-const documentation_service_1 = require("../../../src/utils/documentation-service");
+const documentation_service_1 = require("../../../src/services/documentation-service");
 (0, vitest_1.describe)('DocumentationService transformations', () => {
     (0, vitest_1.it)('transformFunctionData extracts return type and cleans signature', () => {
         const svc = new documentation_service_1.DocumentationService();

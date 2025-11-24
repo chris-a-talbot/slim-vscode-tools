@@ -10,8 +10,8 @@ import {
 } from '../config/paths';
 import { TEXT_PROCESSING_PATTERNS } from '../config/config';
 import { FunctionData, ClassInfo, CallbackInfo, TypeInfo, OperatorInfo, ConstructorInfo } from '../config/types';
-import { log, logErrorWithStack } from './logger';
-import { cleanSignature } from './text-processing';
+import { log, logErrorWithStack } from '../utils/logger';
+import { cleanSignature } from '../utils/text-processing';
 
 export class DocumentationService {
     private functionsData: Record<string, FunctionData> = {};

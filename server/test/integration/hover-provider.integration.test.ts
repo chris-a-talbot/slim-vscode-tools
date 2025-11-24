@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import type { Hover } from 'vscode-languageserver';
 import { registerHoverProvider } from '../../src/providers/hover';
 import type { LanguageServerContext } from '../../src/config/types';
-import type { DocumentationService } from '../../src/utils/documentation-service';
+import type { DocumentationService } from '../../src/services/documentation-service';
 
 class MockDocumentationService implements Partial<DocumentationService> {
   getFunctions() { return {}; }

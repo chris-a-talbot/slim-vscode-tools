@@ -1,8 +1,4 @@
 "use strict";
-// ============================================================================
-// DOCUMENT SYMBOLS PROVIDER
-// Generates document symbols (the outline view).
-// ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerDocumentSymbolsProvider = registerDocumentSymbolsProvider;
 const config_1 = require("../config/config");

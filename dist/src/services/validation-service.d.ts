@@ -1,6 +1,6 @@
 import { Diagnostic } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { DocumentationService } from '../utils/documentation-service';
+import { DocumentationService } from '../services/documentation-service';
 export declare class ValidationService {
     private documentationService;
     constructor(documentationService: DocumentationService);

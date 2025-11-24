@@ -1,8 +1,3 @@
-// ============================================================================
-// CODE ACTIONS PROVIDER
-// Provides quick fixes and refactoring actions for diagnostics
-// ============================================================================
-
 import {
     CodeAction,
     CodeActionKind,
@@ -65,7 +60,6 @@ function createCodeActionsForDiagnostic(
 
     // Handle method not exists errors - handled in getSuggestionsForMissingMember
     // Handle property not exists errors - handled in getSuggestionsForMissingMember
-    // Handle function not found - future: add suggestions
 
     // Handle NULL assignment errors
     if (message.includes('NULL cannot be passed')) {

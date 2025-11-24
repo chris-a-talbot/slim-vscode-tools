@@ -1,8 +1,3 @@
-// ============================================================================
-// DOCUMENT SYMBOLS PROVIDER
-// Generates document symbols (the outline view).
-// ============================================================================
-
 import { DocumentSymbolParams, DocumentSymbol } from 'vscode-languageserver';
 import { COMPLETION_KINDS, CALLBACK_NAMES } from '../config/config';
 import { LanguageServerContext } from '../config/types';

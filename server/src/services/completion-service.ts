@@ -1,9 +1,9 @@
 import { CompletionItem, CompletionList, TextDocument, Position, CompletionItemKind } from 'vscode-languageserver';
-import { DocumentationService } from '../utils/documentation-service';
+import { DocumentationService } from './documentation-service';
 import { getAutocompleteContextAtPosition } from '../utils/positions';
 import { resolveClassName } from '../utils/type-resolving';
 import { trackInstanceDefinitions } from '../utils/instance';
-import { createFunctionMarkdown, createMethodMarkdown, createPropertyMarkdown, createCallbackMarkdown, createConstructorMarkdown } from '../utils/markdown-builder';
+import { createFunctionMarkdown, createMethodMarkdown, createPropertyMarkdown, createCallbackMarkdown, createConstructorMarkdown } from '../utils/markdown';
 import { FunctionData, MethodInfo, PropertyInfo, CallbackInfo } from '../config/types';
 import { ConstructorInfo } from '../config/types';
 import { cleanSignature, cleanTypeNames } from '../utils/text-processing';

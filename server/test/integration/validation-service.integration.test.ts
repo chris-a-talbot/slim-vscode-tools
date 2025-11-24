@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ValidationService } from '../../src/services/validation-service';
-import type { DocumentationService } from '../../src/utils/documentation-service';
+import type { DocumentationService } from '../../src/services/documentation-service';
 
 class MockDocumentationService implements Partial<DocumentationService> {
   getFunctions() { return {}; }

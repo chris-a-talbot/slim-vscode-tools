@@ -1,5 +1,5 @@
 import { CompletionItem, CompletionList, TextDocument, Position } from 'vscode-languageserver';
-import { DocumentationService } from '../utils/documentation-service';
+import { DocumentationService } from './documentation-service';
 export declare class CompletionService {
     private documentationService;
     constructor(documentationService: DocumentationService);

@@ -1,8 +1,4 @@
 "use strict";
-// ============================================================================
-// WORKSPACE SYMBOLS PROVIDER
-// Provides symbol search across the workspace
-// ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerWorkspaceSymbolsProvider = registerWorkspaceSymbolsProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");

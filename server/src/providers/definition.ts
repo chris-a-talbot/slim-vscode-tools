@@ -1,8 +1,3 @@
-// ============================================================================
-// DEFINITION PROVIDER
-// Provides "Go to Definition" functionality for variables, functions, and types
-// ============================================================================
-
 import {
     DefinitionParams,
     Location,

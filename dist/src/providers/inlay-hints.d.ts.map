@@ -1,1 +1,1 @@
-{"version":3,"file":"inlay-hints.d.ts","sourceRoot":"","sources":["../../../server/src/providers/inlay-hints.ts"],"names":[],"mappings":"AAWA,OAAO,EAAE,qBAAqB,EAAE,MAAM,iBAAiB,CAAC;AAKxD;;GAEG;AACH,wBAAgB,0BAA0B,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CA2B/E"}
+{"version":3,"file":"inlay-hints.d.ts","sourceRoot":"","sources":["../../../server/src/providers/inlay-hints.ts"],"names":[],"mappings":"AAMA,OAAO,EAAE,qBAAqB,EAAE,MAAM,iBAAiB,CAAC;AAKxD;;GAEG;AACH,wBAAgB,0BAA0B,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CA2B/E"}

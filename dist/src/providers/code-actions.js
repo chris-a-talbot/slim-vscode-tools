@@ -1,8 +1,4 @@
 "use strict";
-// ============================================================================
-// CODE ACTIONS PROVIDER
-// Provides quick fixes and refactoring actions for diagnostics
-// ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerCodeActionProvider = registerCodeActionProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");
@@ -44,7 +40,6 @@ function createCodeActionsForDiagnostic(diagnostic, _params, uri) {
     }
     // Handle method not exists errors - handled in getSuggestionsForMissingMember
     // Handle property not exists errors - handled in getSuggestionsForMissingMember
-    // Handle function not found - future: add suggestions
     // Handle NULL assignment errors
     if (message.includes('NULL cannot be passed')) {
         actions.push(createRemoveNullAction(diagnostic, uri));

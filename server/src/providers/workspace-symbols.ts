@@ -1,8 +1,3 @@
-// ============================================================================
-// WORKSPACE SYMBOLS PROVIDER
-// Provides symbol search across the workspace
-// ============================================================================
-
 import {
     WorkspaceSymbolParams,
     SymbolInformation,

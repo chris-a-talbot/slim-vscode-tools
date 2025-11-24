@@ -1,8 +1,3 @@
-// ============================================================================
-// RENAME PROVIDER
-// Provides symbol renaming functionality across the document
-// ============================================================================
-
 import {
     RenameParams,
     PrepareRenameParams,

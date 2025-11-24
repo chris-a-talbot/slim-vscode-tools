@@ -1,8 +1,3 @@
-// ============================================================================
-// CODE FORMATTING PROVIDER
-// Basic code formatting with brace-based indentation
-// ============================================================================
-
 import { DocumentFormattingParams, TextEdit } from 'vscode-languageserver';
 import { FormattingOptions, LanguageServerContext } from '../config/types';
 

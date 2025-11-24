@@ -8,7 +8,7 @@ exports.validateScriptStructure = validateScriptStructure;
 exports.shouldHaveSemicolon = shouldHaveSemicolon;
 const vscode_languageserver_1 = require("vscode-languageserver");
 const diagnostics_1 = require("../utils/diagnostics");
-const text_1 = require("../utils/text");
+const text_processing_1 = require("../utils/text-processing");
 const config_1 = require("../config/config");
 const config_2 = require("../config/config");
 const config_3 = require("../config/config");
@@ -25,7 +25,7 @@ function validateScriptStructure(text, lines) {
     let stringStartChar = config_1.DEFAULT_POSITIONS.INVALID;
     let inString = false;
     lines.forEach((line, lineIndex) => {
-        (0, text_1.parseCodeWithStringsAndComments)(line, {}, (_char, state, position) => {
+        (0, text_processing_1.parseCodeWithStringsAndComments)(line, {}, (_char, state, position) => {
             // Track when we enter a string
             if (state.inString && !inString) {
                 stringStartLine = lineIndex;
@@ -87,14 +87,14 @@ function validateScriptStructure(text, lines) {
  */
 function shouldHaveSemicolon(line, parenBalance = config_1.INITIAL_DEPTHS.PARENTHESIS) {
     // Remove strings first (they could contain parentheses or other characters)
-    const codeWithoutStrings = (0, text_1.removeStringsFromLine)(line);
+    const codeWithoutStrings = (0, text_processing_1.removeStringsFromLine)(line);
     // Remove comments (strings already removed, so we can safely match // and /*)
     let codeOnly = codeWithoutStrings
         .replace(config_2.TEXT_PROCESSING_PATTERNS.SINGLE_LINE_COMMENT, '') // Single-line comments: // to end of line
         .replace(config_2.TEXT_PROCESSING_PATTERNS.MULTILINE_COMMENT, '') // Multi-line comments on same line: /* ... */
         .trim();
     // Count parentheses, ignoring any remaining comments
-    const parenCounts = (0, text_1.countParenthesesIgnoringStringsAndComments)(codeOnly);
+    const parenCounts = (0, text_processing_1.countParenthesesIgnoringStringsAndComments)(codeOnly);
     const netParens = parenBalance + parenCounts.openCount - parenCounts.closeCount;
     // Check if line ends with safe characters (after removing strings/comments)
     const trimmedCode = codeOnly.trim();

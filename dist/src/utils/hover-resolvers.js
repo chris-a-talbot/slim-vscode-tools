@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getHoverForWord = getHoverForWord;
 const config_1 = require("../config/config");
 const type_resolving_1 = require("./type-resolving");
-const markdown_builder_1 = require("./markdown-builder");
+const markdown_1 = require("./markdown");
 const config_2 = require("../config/config");
 /**
  * Creates a hover response with markdown content
@@ -30,10 +30,10 @@ function getClassMemberHover(word, className, classesData) {
     if (!classInfo)
         return null;
     if (classInfo.methods?.[word]) {
-        return createHoverResponse((0, markdown_builder_1.createMethodMarkdown)(className, word, classInfo.methods[word]));
+        return createHoverResponse((0, markdown_1.createMethodMarkdown)(className, word, classInfo.methods[word]));
     }
     if (classInfo.properties?.[word]) {
-        return createHoverResponse((0, markdown_builder_1.createPropertyMarkdown)(className, word, classInfo.properties[word]));
+        return createHoverResponse((0, markdown_1.createPropertyMarkdown)(className, word, classInfo.properties[word]));
     }
     return null;
 }
@@ -45,15 +45,15 @@ function getLogFileMemberHover(word, classesData) {
         return null;
     const dictClass = classesData[config_1.CLASS_NAMES.DICTIONARY];
     if (dictClass.methods?.[word]) {
-        return createHoverResponse((0, markdown_builder_1.createMethodMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, dictClass.methods[word]));
+        return createHoverResponse((0, markdown_1.createMethodMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, dictClass.methods[word]));
     }
     if (dictClass.properties?.[word]) {
-        return createHoverResponse((0, markdown_builder_1.createPropertyMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, dictClass.properties[word]));
+        return createHoverResponse((0, markdown_1.createPropertyMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, dictClass.properties[word]));
     }
     // Search all classes for LogFile-specific methods
     for (const [, classInfo] of Object.entries(classesData)) {
         if (classInfo.methods?.[word] && classInfo.methods[word].description?.includes(config_1.CLASS_NAMES.LOGFILE)) {
-            return createHoverResponse((0, markdown_builder_1.createMethodMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, classInfo.methods[word]));
+            return createHoverResponse((0, markdown_1.createMethodMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, classInfo.methods[word]));
         }
     }
     return null;
@@ -75,7 +75,7 @@ function getAnyClassMemberHover(word, classesData) {
 function getCallbackHover(word, callbacksData) {
     // Check if it's an Eidos event
     if (config_2.EIDOS_EVENT_NAMES.includes(word) && callbacksData['Eidos events']) {
-        return createHoverResponse((0, markdown_builder_1.createEidosEventMarkdown)(word, callbacksData['Eidos events']));
+        return createHoverResponse((0, markdown_1.createEidosEventMarkdown)(word, callbacksData['Eidos events']));
     }
     // Check other callbacks
     for (const [callbackName, callbackInfo] of Object.entries(callbacksData)) {
@@ -83,7 +83,7 @@ function getCallbackHover(word, callbacksData) {
             callbackInfo.signature === word ||
             callbackName.startsWith(word + '(') ||
             callbackName.startsWith(word + '()')) {
-            return createHoverResponse((0, markdown_builder_1.createCallbackMarkdown)(callbackName, callbackInfo));
+            return createHoverResponse((0, markdown_1.createCallbackMarkdown)(callbackName, callbackInfo));
         }
     }
     return null;
@@ -104,7 +104,7 @@ function getHoverForWord(word, context, hoverContext) {
         // Priority 1: Instance hover (highest priority)
         {
             test: (ctx) => !!ctx.instanceClass,
-            resolve: (w, ctx) => createHoverResponse((0, markdown_builder_1.createInstanceMarkdown)(w, ctx.instanceClass)),
+            resolve: (w, ctx) => createHoverResponse((0, markdown_1.createInstanceMarkdown)(w, ctx.instanceClass)),
             priority: 1
         },
         // Priority 2: Method/property on known instance
@@ -134,7 +134,7 @@ function getHoverForWord(word, context, hoverContext) {
             resolve: (w, _, hCtx) => {
                 const functionInfo = hCtx.functionsData[w];
                 const source = functionInfo.source || undefined;
-                return createHoverResponse((0, markdown_builder_1.createFunctionMarkdown)(w, functionInfo, source));
+                return createHoverResponse((0, markdown_1.createFunctionMarkdown)(w, functionInfo, source));
             },
             priority: 4
         },
@@ -149,7 +149,7 @@ function getHoverForWord(word, context, hoverContext) {
             test: (_, hCtx) => !!hCtx.typesData[word],
             resolve: (w, _, hCtx) => {
                 const typeInfo = hCtx.typesData[w];
-                return createHoverResponse((0, markdown_builder_1.createTypeMarkdown)(w, typeInfo));
+                return createHoverResponse((0, markdown_1.createTypeMarkdown)(w, typeInfo));
             },
             priority: 6
         }

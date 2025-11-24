@@ -10,7 +10,7 @@ import {
     createTypeMarkdown,
     createInstanceMarkdown,
     createEidosEventMarkdown
-} from './markdown-builder';
+} from './markdown';
 import { ClassInfo, CallbackInfo } from '../config/types';
 import { EIDOS_EVENT_NAMES } from '../config/config';
 

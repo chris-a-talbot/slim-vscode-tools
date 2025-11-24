@@ -8,7 +8,7 @@ import {
   countBracesIgnoringStringsAndComments,
   countParenthesesIgnoringStringsAndComments,
   removeStringsFromLine,
-} from '../../../src/utils/text';
+} from '../../../src/utils/text-processing';
 
 describe('type cleaning helpers', () => {
   it('expands type abbreviations', () => {

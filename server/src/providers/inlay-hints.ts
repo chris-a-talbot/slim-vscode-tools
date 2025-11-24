@@ -1,8 +1,3 @@
-// ============================================================================
-// INLAY HINTS PROVIDER
-// Provides inline type annotations and parameter hints
-// ============================================================================
-
 import {
     InlayHint,
     InlayHintKind,

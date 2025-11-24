@@ -5,7 +5,7 @@ const positions_1 = require("../utils/positions");
 const instance_1 = require("../utils/instance");
 const type_info_1 = require("../utils/type-info");
 const type_resolving_1 = require("../utils/type-resolving");
-const markdown_builder_1 = require("../utils/markdown-builder");
+const markdown_1 = require("../utils/markdown");
 const hover_resolvers_1 = require("../utils/hover-resolvers");
 /**
  * Registers the hover provider handler.
@@ -28,7 +28,7 @@ function registerHoverProvider(context) {
         // Check for operators first
         const operator = (0, positions_1.getOperatorAtPosition)(text, position);
         if (operator && operatorsData[operator]) {
-            return { contents: { kind: 'markdown', value: (0, markdown_builder_1.createOperatorMarkdown)(operator, operatorsData[operator]) } };
+            return { contents: { kind: 'markdown', value: (0, markdown_1.createOperatorMarkdown)(operator, operatorsData[operator]) } };
         }
         const wordInfo = (0, positions_1.getWordAndContextAtPosition)(text, position, {
             resolveClassName: type_resolving_1.resolveClassName,

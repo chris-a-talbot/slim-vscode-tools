@@ -4,7 +4,7 @@ exports.CompletionService = void 0;
 const positions_1 = require("../utils/positions");
 const type_resolving_1 = require("../utils/type-resolving");
 const instance_1 = require("../utils/instance");
-const markdown_builder_1 = require("../utils/markdown-builder");
+const markdown_1 = require("../utils/markdown");
 const text_processing_1 = require("../utils/text-processing");
 const config_1 = require("../config/config");
 class CompletionService {
@@ -34,7 +34,7 @@ class CompletionService {
         if (functionInfo) {
             item.documentation = {
                 kind: "markdown",
-                value: (0, markdown_builder_1.createFunctionMarkdown)(item.label, functionInfo, functionInfo.source)
+                value: (0, markdown_1.createFunctionMarkdown)(item.label, functionInfo, functionInfo.source)
             };
             return item;
         }
@@ -51,14 +51,14 @@ class CompletionService {
         if (memberName && classInfo.methods?.[memberName]) {
             item.documentation = {
                 kind: "markdown",
-                value: (0, markdown_builder_1.createMethodMarkdown)(className, memberName, classInfo.methods[memberName])
+                value: (0, markdown_1.createMethodMarkdown)(className, memberName, classInfo.methods[memberName])
             };
             return item;
         }
         if (memberName && classInfo.properties?.[memberName]) {
             item.documentation = {
                 kind: "markdown",
-                value: (0, markdown_builder_1.createPropertyMarkdown)(className, memberName, classInfo.properties[memberName])
+                value: (0, markdown_1.createPropertyMarkdown)(className, memberName, classInfo.properties[memberName])
             };
             return item;
         }
@@ -113,7 +113,7 @@ class CompletionService {
             label: methodName,
             kind: config_1.COMPLETION_KINDS.METHOD,
             detail: (0, text_processing_1.cleanSignature)(methodInfo.signature),
-            documentation: (0, markdown_builder_1.createMethodMarkdown)(className, methodName, methodInfo),
+            documentation: (0, markdown_1.createMethodMarkdown)(className, methodName, methodInfo),
             command: {
                 title: 'Show Documentation',
                 command: 'slimTools.showFunctionDoc',
@@ -127,7 +127,7 @@ class CompletionService {
             label: propertyName,
             kind: config_1.COMPLETION_KINDS.PROPERTY,
             detail: `Type: ${cleanedType}`,
-            documentation: (0, markdown_builder_1.createPropertyMarkdown)(className, propertyName, propertyInfo),
+            documentation: (0, markdown_1.createPropertyMarkdown)(className, propertyName, propertyInfo),
             command: {
                 title: 'Show Documentation',
                 command: 'slimTools.showPropertyDoc',
@@ -141,7 +141,7 @@ class CompletionService {
             label: cleanedSignature,
             kind: config_1.COMPLETION_KINDS.FUNCTION,
             detail: cleanedSignature,
-            documentation: (0, markdown_builder_1.createFunctionMarkdown)(functionName, functionInfo, functionInfo.source),
+            documentation: (0, markdown_1.createFunctionMarkdown)(functionName, functionInfo, functionInfo.source),
             command: {
                 title: 'Show Documentation',
                 command: 'slimTools.showFunctionDoc',
@@ -155,7 +155,7 @@ class CompletionService {
             label: cleanedSignature,
             kind: config_1.COMPLETION_KINDS.FUNCTION,
             detail: cleanedSignature,
-            documentation: (0, markdown_builder_1.createCallbackMarkdown)(callbackName, callbackInfo),
+            documentation: (0, markdown_1.createCallbackMarkdown)(callbackName, callbackInfo),
             command: {
                 title: 'Show Documentation',
                 command: 'slimTools.showFunctionDoc',
@@ -169,7 +169,7 @@ class CompletionService {
             label: className,
             kind: config_1.COMPLETION_KINDS.CLASS,
             detail: cleanedSignature,
-            documentation: (0, markdown_builder_1.createConstructorMarkdown)(className, constructorInfo),
+            documentation: (0, markdown_1.createConstructorMarkdown)(className, constructorInfo),
             command: {
                 title: 'Show Documentation',
                 command: 'slimTools.showConstructorDoc',

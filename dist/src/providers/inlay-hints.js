@@ -1,8 +1,4 @@
 "use strict";
-// ============================================================================
-// INLAY HINTS PROVIDER
-// Provides inline type annotations and parameter hints
-// ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerInlayHintsProvider = registerInlayHintsProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");

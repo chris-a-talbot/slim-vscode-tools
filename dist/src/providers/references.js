@@ -1,8 +1,4 @@
 "use strict";
-// ============================================================================
-// REFERENCES PROVIDER
-// Provides "Find All References" functionality for variables, functions, and types
-// ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerReferencesProvider = registerReferencesProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");

@@ -1,8 +1,4 @@
 "use strict";
-// ============================================================================
-// RENAME PROVIDER
-// Provides symbol renaming functionality across the document
-// ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerRenameProvider = registerRenameProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");

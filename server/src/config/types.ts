@@ -6,7 +6,7 @@
 import { Connection, TextDocument, TextDocuments } from 'vscode-languageserver';
 import { CompletionService } from '../services/completion-service';
 import { ValidationService } from '../services/validation-service';
-import { DocumentationService } from '../utils/documentation-service';
+import { DocumentationService } from '../services/documentation-service';
 
 // ============================================================================
 // CORE DATA STRUCTURES

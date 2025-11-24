@@ -1,8 +1,4 @@
 "use strict";
-// ============================================================================
-// CODE FORMATTING PROVIDER
-// Basic code formatting with brace-based indentation
-// ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.formatSLiMCode = formatSLiMCode;
 exports.registerFormattingProvider = registerFormattingProvider;

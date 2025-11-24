@@ -1,6 +1,6 @@
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { DocumentationService } from '../utils/documentation-service';
+import { DocumentationService } from '../services/documentation-service';
 import { createDiagnostic } from '../utils/diagnostics';
 import { validateDefinitions } from '../validation/definitions';
 import { validateScriptStructure, shouldHaveSemicolon } from '../validation/structure';
@@ -11,7 +11,7 @@ import { validateNullAssignments } from '../validation/null-assignments';
 import { validateContextRestrictions } from '../validation/context-restrictions';
 import { validateInitializationRules } from '../validation/initialization-rules';
 import { validateInteractionQueries } from '../validation/interaction-queries';
-import { countBracesIgnoringStringsAndComments, removeCommentsAndStringsFromLine } from '../utils/text';
+import { countBracesIgnoringStringsAndComments, removeCommentsAndStringsFromLine } from '../utils/text-processing';
 import { DEFAULT_POSITIONS, INITIAL_DEPTHS } from '../config/config';
 import { EVENT_PATTERNS } from '../config/config';
 import { ERROR_MESSAGES } from '../config/config';

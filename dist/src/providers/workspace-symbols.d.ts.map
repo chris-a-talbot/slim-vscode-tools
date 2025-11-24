@@ -1,1 +1,1 @@
-{"version":3,"file":"workspace-symbols.d.ts","sourceRoot":"","sources":["../../../server/src/providers/workspace-symbols.ts"],"names":[],"mappings":"AAYA,OAAO,EAAE,qBAAqB,EAAE,MAAM,iBAAiB,CAAC;AAGxD;;GAEG;AACH,wBAAgB,gCAAgC,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CAerF"}
+{"version":3,"file":"workspace-symbols.d.ts","sourceRoot":"","sources":["../../../server/src/providers/workspace-symbols.ts"],"names":[],"mappings":"AAOA,OAAO,EAAE,qBAAqB,EAAE,MAAM,iBAAiB,CAAC;AAGxD;;GAEG;AACH,wBAAgB,gCAAgC,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CAerF"}

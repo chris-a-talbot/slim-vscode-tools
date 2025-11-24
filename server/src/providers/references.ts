@@ -1,8 +1,3 @@
-// ============================================================================
-// REFERENCES PROVIDER
-// Provides "Find All References" functionality for variables, functions, and types
-// ============================================================================
-
 import {
     ReferenceParams,
     Location,

@@ -3,7 +3,7 @@ import { getOperatorAtPosition, getWordAndContextAtPosition } from '../utils/pos
 import { trackInstanceDefinitions } from '../utils/instance';
 import { inferTypeFromExpression } from '../utils/type-info';
 import { resolveClassName } from '../utils/type-resolving';
-import { createOperatorMarkdown } from '../utils/markdown-builder';
+import { createOperatorMarkdown } from '../utils/markdown';
 import { HoverContext } from '../config/types';
 import { LanguageServerContext } from '../config/types';
 import { getHoverForWord } from '../utils/hover-resolvers';

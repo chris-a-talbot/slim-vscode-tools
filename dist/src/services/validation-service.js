@@ -12,7 +12,7 @@ const null_assignments_1 = require("../validation/null-assignments");
 const context_restrictions_1 = require("../validation/context-restrictions");
 const initialization_rules_1 = require("../validation/initialization-rules");
 const interaction_queries_1 = require("../validation/interaction-queries");
-const text_1 = require("../utils/text");
+const text_processing_1 = require("../utils/text-processing");
 const config_1 = require("../config/config");
 const config_2 = require("../config/config");
 const config_3 = require("../config/config");
@@ -44,7 +44,7 @@ class DocumentValidator {
         const currentInstanceDefinitions = trackingState.instanceDefinitions;
         // Create versions of lines with comments and strings removed for validation
         // This prevents false positives from code-like content in comments/strings
-        const linesWithoutCommentsAndStrings = this.lines.map(line => (0, text_1.removeCommentsAndStringsFromLine)(line));
+        const linesWithoutCommentsAndStrings = this.lines.map(line => (0, text_processing_1.removeCommentsAndStringsFromLine)(line));
         const textWithoutCommentsAndStrings = linesWithoutCommentsAndStrings.join('\n');
         // Validate document-level issues (using cleaned versions)
         // Note: validateInitializationRules uses original text/lines to detect callbacks
@@ -75,7 +75,7 @@ class DocumentValidator {
         this.validateSemanticAspects(line, lineIndex, instanceDefinitions, trackingState);
     }
     validateBraceBalance(line, lineIndex, isSlimBlock) {
-        const braceCounts = (0, text_1.countBracesIgnoringStringsAndComments)(line);
+        const braceCounts = (0, text_processing_1.countBracesIgnoringStringsAndComments)(line);
         this.braceCount += braceCounts.openCount - braceCounts.closeCount;
         if (braceCounts.openCount > 0)
             this.lastOpenBraceLine = lineIndex;
@@ -85,7 +85,7 @@ class DocumentValidator {
     }
     validateSemanticAspects(line, lineIndex, instanceDefinitions, trackingState) {
         // Remove comments and strings from line before validation to avoid false positives
-        const lineWithoutCommentsAndStrings = (0, text_1.removeCommentsAndStringsFromLine)(line);
+        const lineWithoutCommentsAndStrings = (0, text_processing_1.removeCommentsAndStringsFromLine)(line);
         // Skip validation if the entire line is now empty (was a comment)
         if (!lineWithoutCommentsAndStrings.trim()) {
             return;
