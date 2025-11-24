@@ -215,6 +215,10 @@ Initial release of `slim-tools` with the following features:
 - Added the code actions provider (`code-actions.ts`) to provide quick fixes for common errors and simple refactorings
 - Improved the validation service to avoid throwing errors while a line is being typed
 
+## [0.0.15]
+- Added the rename provider (`rename.ts`) to manage refactoring in large documents/codebases
+- Added the formatting provider (`formatting.ts`) for formatting of documents and code chunks
+
 ## Development notes
 
 1. First install the dependencies with `npm install`

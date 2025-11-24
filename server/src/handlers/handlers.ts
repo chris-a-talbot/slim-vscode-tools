@@ -9,6 +9,8 @@ import { LanguageServerContext } from '../config/types';
 import { logErrorWithStack } from '../utils/logger';
 import { registerSignatureHelpProvider } from '../providers/signature-help';
 import { registerCodeActionProvider } from '../providers/code-actions';
+import { registerFormattingProvider } from '../providers/formatting';
+import { registerRenameProvider } from '../providers/rename';
 
 export function registerHandlers(context: LanguageServerContext): void {
     const { connection, documents, validationService } = context;
@@ -35,6 +37,13 @@ export function registerHandlers(context: LanguageServerContext): void {
                     retriggerCharacters: [",", ")"]
                 },
                 codeActionProvider: true,
+                documentFormattingProvider: true,
+                documentRangeFormattingProvider: true,
+                documentOnTypeFormattingProvider: {
+                    firstTriggerCharacter: '\n',
+                    moreTriggerCharacter: ['}']
+                },
+                renameProvider: true,
             } as ServerCapabilities
         };
         return result;
@@ -69,4 +78,6 @@ export function registerHandlers(context: LanguageServerContext): void {
     registerReferencesProvider(context);
     registerSignatureHelpProvider(context);
     registerCodeActionProvider(context);
+    registerFormattingProvider(context);
+    registerRenameProvider(context);
 }
