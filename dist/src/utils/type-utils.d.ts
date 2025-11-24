@@ -1,4 +1,4 @@
-import { ParameterInfo } from '../types';
+import { ParameterInfo } from '../config/types';
 export type { ParameterInfo };
 /**
  * Extended type information including singleton/vector status.

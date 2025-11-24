@@ -1,4 +1,4 @@
-import { LanguageServerContext } from '../types';
+import { LanguageServerContext } from '../config/types';
 /**
  * Registers the signature help provider handler.
  * Provides signature help (parameter hints) when the user types a function call.

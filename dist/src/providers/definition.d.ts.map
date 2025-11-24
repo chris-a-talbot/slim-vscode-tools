@@ -1,1 +1,1 @@
-{"version":3,"file":"definition.d.ts","sourceRoot":"","sources":["../../../server/src/providers/definition.ts"],"names":[],"mappings":"AAWA,OAAO,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAGjD;;GAEG;AACH,wBAAgB,0BAA0B,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CAkB/E"}
+{"version":3,"file":"definition.d.ts","sourceRoot":"","sources":["../../../server/src/providers/definition.ts"],"names":[],"mappings":"AAWA,OAAO,EAAE,qBAAqB,EAAE,MAAM,iBAAiB,CAAC;AAGxD;;GAEG;AACH,wBAAgB,0BAA0B,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CAkB/E"}

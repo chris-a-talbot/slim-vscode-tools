@@ -1,1 +1,1 @@
-{"version":3,"file":"document-symbols.d.ts","sourceRoot":"","sources":["../../../server/src/providers/document-symbols.ts"],"names":[],"mappings":"AAOA,OAAO,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAEjD;;;;GAIG;AACH,wBAAgB,+BAA+B,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CA4DpF"}
+{"version":3,"file":"document-symbols.d.ts","sourceRoot":"","sources":["../../../server/src/providers/document-symbols.ts"],"names":[],"mappings":"AAOA,OAAO,EAAE,qBAAqB,EAAE,MAAM,iBAAiB,CAAC;AAExD;;;;GAIG;AACH,wBAAgB,+BAA+B,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CA4DpF"}

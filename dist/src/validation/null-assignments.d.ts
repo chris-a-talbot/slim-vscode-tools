@@ -1,5 +1,5 @@
 import { Diagnostic } from 'vscode-languageserver';
-import { FunctionData, ClassInfo } from '../types';
+import { FunctionData, ClassInfo } from '../config/types';
 /**
  * Validates that NULL is not passed to non-nullable parameters.
  * @param line - The line of code to validate

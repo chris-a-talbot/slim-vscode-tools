@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerHoverProvider = registerHoverProvider;
-const position_utils_1 = require("../utils/position-utils");
-const instance_tracker_1 = require("../tracking/instance-tracker");
-const expression_type_inference_1 = require("../tracking/expression-type-inference");
+const positions_1 = require("../utils/positions");
+const instance_1 = require("../utils/instance");
+const type_info_1 = require("../utils/type-info");
 const type_resolving_1 = require("../utils/type-resolving");
 const markdown_builder_1 = require("../utils/markdown-builder");
 const hover_resolvers_1 = require("../utils/hover-resolvers");
@@ -24,16 +24,16 @@ function registerHoverProvider(context) {
             return null;
         const position = params.position;
         const text = document.getText();
-        const trackingState = (0, instance_tracker_1.trackInstanceDefinitions)(document);
+        const trackingState = (0, instance_1.trackInstanceDefinitions)(document);
         // Check for operators first
-        const operator = (0, position_utils_1.getOperatorAtPosition)(text, position);
+        const operator = (0, positions_1.getOperatorAtPosition)(text, position);
         if (operator && operatorsData[operator]) {
             return { contents: { kind: 'markdown', value: (0, markdown_builder_1.createOperatorMarkdown)(operator, operatorsData[operator]) } };
         }
-        const wordInfo = (0, position_utils_1.getWordAndContextAtPosition)(text, position, {
+        const wordInfo = (0, positions_1.getWordAndContextAtPosition)(text, position, {
             resolveClassName: type_resolving_1.resolveClassName,
             instanceDefinitions: trackingState.instanceDefinitions,
-            inferTypeFromExpression: expression_type_inference_1.inferTypeFromExpression
+            inferTypeFromExpression: type_info_1.inferTypeFromExpression
         });
         if (!wordInfo)
             return null;

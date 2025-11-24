@@ -6,9 +6,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerInlayHintsProvider = registerInlayHintsProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");
-const instance_tracker_1 = require("../tracking/instance-tracker");
-const expression_type_inference_1 = require("../tracking/expression-type-inference");
-const regex_patterns_1 = require("../config/regex-patterns");
+const instance_1 = require("../utils/instance");
+const type_info_1 = require("../utils/type-info");
+const config_1 = require("../config/config");
 /**
  * Registers the inlay hints provider for type annotations
  */
@@ -21,7 +21,7 @@ function registerInlayHintsProvider(context) {
         const text = document.getText();
         const hints = [];
         // Track all instance definitions in the document
-        const trackingState = (0, instance_tracker_1.trackInstanceDefinitions)(document);
+        const trackingState = (0, instance_1.trackInstanceDefinitions)(document);
         // Get lines in the requested range
         const lines = text.split('\n');
         const startLine = params.range.start.line;
@@ -40,7 +40,7 @@ function registerInlayHintsProvider(context) {
 function getTypeHintsForLine(line, lineIndex, trackingState) {
     const hints = [];
     // Pattern: variable = expression;
-    const assignmentMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.ASSIGNMENT);
+    const assignmentMatch = line.match(config_1.DEFINITION_PATTERNS.ASSIGNMENT);
     if (assignmentMatch) {
         const varName = assignmentMatch[1];
         const expression = assignmentMatch[2].trim();
@@ -61,7 +61,7 @@ function getTypeHintsForLine(line, lineIndex, trackingState) {
         }
         else {
             // Try to infer type from expression
-            const inferredType = (0, expression_type_inference_1.inferTypeFromExpression)(expression);
+            const inferredType = (0, type_info_1.inferTypeFromExpression)(expression);
             if (inferredType) {
                 const varIndex = line.indexOf(varName);
                 if (varIndex !== -1) {
@@ -82,7 +82,7 @@ function getTypeHintsForLine(line, lineIndex, trackingState) {
         const varName = forInMatch[1];
         const collection = forInMatch[2].trim();
         // Try to infer element type from collection
-        const collectionType = (0, expression_type_inference_1.inferTypeFromExpression)(collection);
+        const collectionType = (0, type_info_1.inferTypeFromExpression)(collection);
         if (collectionType) {
             const varIndex = line.indexOf(varName);
             if (varIndex !== -1) {

@@ -12,108 +12,69 @@ exports.countParenthesesIgnoringStringsAndComments = countParenthesesIgnoringStr
 exports.removeStringsFromLine = removeStringsFromLine;
 exports.removeCommentsFromLine = removeCommentsFromLine;
 exports.removeCommentsAndStringsFromLine = removeCommentsAndStringsFromLine;
+const he_1 = require("he");
 /**
  * Expands Eidos/SLiM type abbreviations to readable base type names.
  * Type abbreviations: N = nullable, i = integer, o = object, l = logical, s = string, f = float
  * Examples: Ni -> integer, No<Class> -> object<Class>, Nl -> logical
- * @param text - The text to expand
- * @returns Text with abbreviations expanded to base types
  */
 function expandTypeAbbreviations(text) {
     if (!text)
         return text;
-    // Expand nullable type abbreviations to base types (drop the "nullable" part for brevity)
-    // Ni = integer (nullable), Nl = logical (nullable), Ns = string (nullable), Nf = float (nullable)
-    text = text.replace(/\bNi\b/g, 'integer');
-    text = text.replace(/\bNl\b/g, 'logical');
-    text = text.replace(/\bNs\b/g, 'string');
-    text = text.replace(/\bNf\b/g, 'float');
-    // Expand nullable object types: No<ClassType> -> object<ClassType>
-    text = text.replace(/\bNo<([^>]+)>/g, 'object<$1>');
-    // Expand compound nullable types: Nif = integer or float, Nis = integer or string
-    text = text.replace(/\bNif\b/g, 'integer or float');
-    text = text.replace(/\bNis\b/g, 'integer or string');
-    // Expand union types: is = integer or string (non-nullable)
-    text = text.replace(/\bis\b/g, 'integer or string');
-    return text;
+    return text
+        .replace(/\bNi\b/g, 'integer')
+        .replace(/\bNl\b/g, 'logical')
+        .replace(/\bNs\b/g, 'string')
+        .replace(/\bNf\b/g, 'float')
+        .replace(/\bNo<([^>]+)>/g, 'object<$1>')
+        .replace(/\bNif\b/g, 'integer or float')
+        .replace(/\bNis\b/g, 'integer or string')
+        .replace(/\bis\b/g, 'integer or string');
 }
 /**
- * Cleans type names in signatures and descriptions by removing trailing dollar signs.
- * In SLiM/Eidos, $ indicates singleton types (single value), while no $ indicates vectors.
- * We remove $ for display clarity, but preserve it internally for type inference.
- * Also expands type abbreviations for better readability.
- * @param text - The text to clean
- * @returns Text with $ removed from type names and abbreviations expanded
+ * Cleans type names by removing trailing dollar signs and expanding abbreviations.
+ * In SLiM/Eidos, $ indicates singleton types (single value), no $ = vector.
  */
 function cleanTypeNames(text) {
     if (!text)
         return text;
-    // Remove $ that appears after type names (e.g., "integer$" -> "integer", "object<DataFrame>$" -> "object<DataFrame>")
-    // Match word characters, angle brackets with content, then optional $
-    // This handles: integer$, string$, object<ClassType>$, etc.
+    // Remove $ from type names, then expand abbreviations
     text = text.replace(/(\w+(?:<[^>]+>)?)\$/g, '$1');
-    // Expand type abbreviations for better readability
-    text = expandTypeAbbreviations(text);
-    return text;
+    return expandTypeAbbreviations(text);
 }
 /**
- * Cleans signatures by removing trailing dollar signs from type names,
- * expanding type abbreviations, and removing "object<" prefix from generic types.
- * @param signature - The signature to clean
- * @returns Cleaned signature
+ * Cleans signatures by removing $ from type names, expanding abbreviations,
+ * and simplifying object<> notation.
  */
 function cleanSignature(signature) {
     if (!signature)
         return signature;
     let cleaned = cleanTypeNames(signature);
-    // Replace "object<ClassType>" with "<ClassType>" in signatures for clarity
-    cleaned = cleaned.replace(/\bobject<([^>]+)>/gi, '<$1>');
-    return cleaned;
+    // Replace "object<ClassType>" with "<ClassType>" for clarity
+    return cleaned.replace(/\bobject<([^>]+)>/gi, '<$1>');
 }
 /**
  * Cleans documentation text by decoding HTML entities, removing type suffixes,
  * and converting HTML tags to markdown.
- * @param text - The text to clean
- * @returns Cleaned text
  */
 function cleanDocumentationText(text) {
     if (!text)
         return text;
-    // First, decode HTML entities
-    let cleaned = text
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&amp;/g, '&')
-        .replace(/&quot;/g, '"')
-        .replace(/&apos;/g, "'")
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&mdash;/g, '—')
-        .replace(/&ndash;/g, '–')
-        .replace(/&times;/g, '×')
-        .replace(/&divide;/g, '÷')
-        .replace(/&plusmn;/g, '±')
-        .replace(/&le;/g, '≤')
-        .replace(/&ge;/g, '≥')
-        .replace(/&ne;/g, '≠')
-        .replace(/&hellip;/g, '…');
-    // Remove trailing $ from type names and expand abbreviations
+    // Decode HTML entities using 'he' library
+    let cleaned = (0, he_1.decode)(text);
+    // Clean type names
     cleaned = cleanTypeNames(cleaned);
-    // Replace "object<ClassType>" with "<ClassType>" in descriptions for clarity
+    // Replace "object<ClassType>" with "<ClassType>" in descriptions
     cleaned = cleaned.replace(/\bobject<([^>]+)>/gi, '<$1>');
-    // Convert subscript tags to markdown
-    // Pattern: <sub>content</sub> -> ~content~
-    cleaned = cleaned.replace(/<sub>([^<]+)<\/sub>/gi, '<sub>$1</sub>');
-    // Convert superscript tags to markdown
-    cleaned = cleaned.replace(/<sup>([^<]+)<\/sup>/gi, '<sup>$1</sup>');
-    // Remove any remaining HTML tags that we don't want (but preserve <sub> and <sup>)
-    cleaned = cleaned.replace(/<span[^>]*>/gi, '').replace(/<\/span>/gi, '');
-    cleaned = cleaned.replace(/<i>/gi, '*').replace(/<\/i>/gi, '*');
-    cleaned = cleaned.replace(/<b>/gi, '**').replace(/<\/b>/gi, '**');
-    cleaned = cleaned.replace(/<em>/gi, '*').replace(/<\/em>/gi, '*');
-    cleaned = cleaned.replace(/<strong>/gi, '**').replace(/<\/strong>/gi, '**');
-    // Clean up any double spaces that might have been created
-    cleaned = cleaned.replace(/\s{2,}/g, ' ');
-    return cleaned;
+    // Convert HTML tags to markdown (preserve sub/sup tags)
+    cleaned = cleaned
+        .replace(/<span[^>]*>/gi, '').replace(/<\/span>/gi, '')
+        .replace(/<i>/gi, '*').replace(/<\/i>/gi, '*')
+        .replace(/<b>/gi, '**').replace(/<\/b>/gi, '**')
+        .replace(/<em>/gi, '*').replace(/<\/em>/gi, '*')
+        .replace(/<strong>/gi, '**').replace(/<\/strong>/gi, '**');
+    // Clean up multiple spaces
+    return cleaned.replace(/\s{2,}/g, ' ');
 }
 /**
  * State machine for tracking string and comment parsing state

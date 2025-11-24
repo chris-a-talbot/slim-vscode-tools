@@ -1,21 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CompletionService = void 0;
-const position_utils_1 = require("../utils/position-utils");
+const positions_1 = require("../utils/positions");
 const type_resolving_1 = require("../utils/type-resolving");
-const instance_tracker_1 = require("../tracking/instance-tracker");
+const instance_1 = require("../utils/instance");
 const markdown_builder_1 = require("../utils/markdown-builder");
 const text_processing_1 = require("../utils/text-processing");
-const constants_1 = require("../config/constants");
+const config_1 = require("../config/config");
 class CompletionService {
     constructor(documentationService) {
         this.documentationService = documentationService;
     }
     getCompletions(document, position) {
         const text = document.getText();
-        const trackingState = (0, instance_tracker_1.trackInstanceDefinitions)(document);
+        const trackingState = (0, instance_1.trackInstanceDefinitions)(document);
         const completions = [];
-        const wordInfo = (0, position_utils_1.getAutocompleteContextAtPosition)(text, position, {
+        const wordInfo = (0, positions_1.getAutocompleteContextAtPosition)(text, position, {
             resolveClassName: type_resolving_1.resolveClassName,
             instanceDefinitions: trackingState.instanceDefinitions
         });
@@ -111,7 +111,7 @@ class CompletionService {
     createMethodCompletion(className, methodName, methodInfo) {
         return this.createCompletionItem({
             label: methodName,
-            kind: constants_1.COMPLETION_KINDS.METHOD,
+            kind: config_1.COMPLETION_KINDS.METHOD,
             detail: (0, text_processing_1.cleanSignature)(methodInfo.signature),
             documentation: (0, markdown_builder_1.createMethodMarkdown)(className, methodName, methodInfo),
             command: {
@@ -125,7 +125,7 @@ class CompletionService {
         const cleanedType = (0, text_processing_1.cleanTypeNames)(propertyInfo.type);
         return this.createCompletionItem({
             label: propertyName,
-            kind: constants_1.COMPLETION_KINDS.PROPERTY,
+            kind: config_1.COMPLETION_KINDS.PROPERTY,
             detail: `Type: ${cleanedType}`,
             documentation: (0, markdown_builder_1.createPropertyMarkdown)(className, propertyName, propertyInfo),
             command: {
@@ -139,7 +139,7 @@ class CompletionService {
         const cleanedSignature = (0, text_processing_1.cleanSignature)(functionInfo.signature || functionInfo.signatures?.[0] || '');
         return this.createCompletionItem({
             label: cleanedSignature,
-            kind: constants_1.COMPLETION_KINDS.FUNCTION,
+            kind: config_1.COMPLETION_KINDS.FUNCTION,
             detail: cleanedSignature,
             documentation: (0, markdown_builder_1.createFunctionMarkdown)(functionName, functionInfo, functionInfo.source),
             command: {
@@ -153,7 +153,7 @@ class CompletionService {
         const cleanedSignature = (0, text_processing_1.cleanSignature)(callbackInfo.signature);
         return this.createCompletionItem({
             label: cleanedSignature,
-            kind: constants_1.COMPLETION_KINDS.FUNCTION,
+            kind: config_1.COMPLETION_KINDS.FUNCTION,
             detail: cleanedSignature,
             documentation: (0, markdown_builder_1.createCallbackMarkdown)(callbackName, callbackInfo),
             command: {
@@ -167,7 +167,7 @@ class CompletionService {
         const cleanedSignature = (0, text_processing_1.cleanSignature)(constructorInfo.signature);
         return this.createCompletionItem({
             label: className,
-            kind: constants_1.COMPLETION_KINDS.CLASS,
+            kind: config_1.COMPLETION_KINDS.CLASS,
             detail: cleanedSignature,
             documentation: (0, markdown_builder_1.createConstructorMarkdown)(className, constructorInfo),
             command: {

@@ -11,8 +11,8 @@ import {
     Range,
     ResponseError
 } from 'vscode-languageserver';
-import { LanguageServerContext } from '../types';
-import { RESERVED_IDENTIFIERS } from '../config/constants';
+import { LanguageServerContext } from '../config/types';
+import { RESERVED_IDENTIFIERS } from '../config/config';
 
 /**
  * Registers the rename provider for symbol renaming

@@ -1,5 +1,5 @@
 import { InitializeParams, InitializeResult, ServerCapabilities, TextDocumentSyncKind, TextDocumentChangeEvent } from 'vscode-languageserver';
-import { sendDiagnostics } from '../utils/diagnostic-factory';
+import { sendDiagnostics } from '../utils/diagnostics';
 import { registerDocumentSymbolsProvider } from '../providers/document-symbols';
 import { registerHoverProvider } from '../providers/hover';
 import { registerCompletionProvider } from '../providers/completion';
@@ -11,7 +11,7 @@ import { registerInlayHintsProvider } from '../providers/inlay-hints';
 import { registerReferencesProvider } from '../providers/references';
 import { registerRenameProvider } from '../providers/rename';
 import { registerWorkspaceSymbolsProvider } from '../providers/workspace-symbols';
-import { LanguageServerContext } from '../types';
+import { LanguageServerContext } from '../config/types';
 import { logErrorWithStack } from '../utils/logger';
 
 /**

@@ -1,13 +1,13 @@
 import { CompletionItem, CompletionList, TextDocument, Position, CompletionItemKind } from 'vscode-languageserver';
-import { DocumentationService } from './documentation-service';
-import { getAutocompleteContextAtPosition } from '../utils/position-utils';
+import { DocumentationService } from '../utils/documentation-service';
+import { getAutocompleteContextAtPosition } from '../utils/positions';
 import { resolveClassName } from '../utils/type-resolving';
-import { trackInstanceDefinitions } from '../tracking/instance-tracker';
+import { trackInstanceDefinitions } from '../utils/instance';
 import { createFunctionMarkdown, createMethodMarkdown, createPropertyMarkdown, createCallbackMarkdown, createConstructorMarkdown } from '../utils/markdown-builder';
-import { FunctionData, MethodInfo, PropertyInfo, CallbackInfo } from '../types';
-import { ConstructorInfo } from '../types';
+import { FunctionData, MethodInfo, PropertyInfo, CallbackInfo } from '../config/types';
+import { ConstructorInfo } from '../config/types';
 import { cleanSignature, cleanTypeNames } from '../utils/text-processing';
-import { COMPLETION_KINDS } from '../config/constants';
+import { COMPLETION_KINDS } from '../config/config';
 
 interface CompletionItemConfig {
     label: string;

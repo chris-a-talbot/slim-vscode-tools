@@ -1,0 +1,1 @@
+{"version":3,"file":"context-restrictions.d.ts","sourceRoot":"","sources":["../../../server/src/validation/context-restrictions.ts"],"names":[],"mappings":"AAMA,OAAO,EAAE,UAAU,EAAsB,MAAM,uBAAuB,CAAC;AAEvE,OAAO,EAAE,aAAa,EAAE,MAAM,iBAAiB,CAAC;AAWhD;;;;;;GAMG;AACH,wBAAgB,2BAA2B,CACvC,IAAI,EAAE,MAAM,EACZ,SAAS,EAAE,MAAM,EACjB,aAAa,EAAE,aAAa,GAC7B,UAAU,EAAE,CA0Bd"}

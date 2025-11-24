@@ -10,8 +10,8 @@ import {
     Diagnostic,
     WorkspaceEdit
 } from 'vscode-languageserver';
-import { LanguageServerContext } from '../types';
-import { ERROR_MESSAGES } from '../config/constants';
+import { LanguageServerContext } from '../config/types';
+import { ERROR_MESSAGES } from '../config/config';
 
 /**
  * Registers the code action provider for quick fixes and refactorings

@@ -1,2 +1,2 @@
-export type { ConstructorInfo } from '../types';
+export type { ConstructorInfo } from '../config/types';
 //# sourceMappingURL=types.d.ts.map

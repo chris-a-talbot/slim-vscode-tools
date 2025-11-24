@@ -1,5 +1,5 @@
-import { TYPE_PATTERNS } from '../config/regex-patterns';
-import { CLASS_NAMES } from '../config/constants';
+import { TYPE_PATTERNS } from '../config/config';
+import { CLASS_NAMES } from '../config/config';
 
 /**
  * Maps known instance names to their class types.

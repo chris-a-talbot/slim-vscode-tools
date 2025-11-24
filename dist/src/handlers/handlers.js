@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerHandlers = registerHandlers;
 const vscode_languageserver_1 = require("vscode-languageserver");
-const diagnostic_factory_1 = require("../utils/diagnostic-factory");
+const diagnostics_1 = require("../utils/diagnostics");
 const document_symbols_1 = require("../providers/document-symbols");
 const hover_1 = require("../providers/hover");
 const completion_1 = require("../providers/completion");
@@ -58,11 +58,11 @@ function registerHandlers(context) {
     // Register document change handler (for validation)
     documents.onDidChangeContent((change) => {
         validationService.validate(change.document).then((diagnostics) => {
-            (0, diagnostic_factory_1.sendDiagnostics)(connection, change.document.uri, diagnostics);
+            (0, diagnostics_1.sendDiagnostics)(connection, change.document.uri, diagnostics);
         }).catch((error) => {
             (0, logger_1.logErrorWithStack)(error, 'Error during validation');
             // Send empty diagnostics on error to clear previous errors
-            (0, diagnostic_factory_1.sendDiagnostics)(connection, change.document.uri, []);
+            (0, diagnostics_1.sendDiagnostics)(connection, change.document.uri, []);
         });
     });
     // Register all providers

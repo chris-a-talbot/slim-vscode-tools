@@ -4,10 +4,10 @@
 // ============================================================================
 
 import { DiagnosticSeverity, Diagnostic } from 'vscode-languageserver';
-import { createDiagnostic } from '../utils/diagnostic-factory';
-import { LOOKAHEAD_LIMITS, INDICES, TYPE_NAMES_FOR_ERRORS } from '../config/constants';
-import { VALIDATION_PATTERNS, TYPE_PATTERNS } from '../config/regex-patterns';
-import { ERROR_MESSAGES, TYPE_NAMES_FOR_ERRORS as TYPE_NAMES } from '../config/constants';
+import { createDiagnostic } from '../utils/diagnostics';
+import { LOOKAHEAD_LIMITS, INDICES, TYPE_NAMES_FOR_ERRORS } from '../config/config';
+import { VALIDATION_PATTERNS, TYPE_PATTERNS } from '../config/config';
+import { ERROR_MESSAGES, TYPE_NAMES_FOR_ERRORS as TYPE_NAMES } from '../config/config';
 
 /**
  * Validates undefined references to SLiM types (mutation types, genomic element types, subpopulations).

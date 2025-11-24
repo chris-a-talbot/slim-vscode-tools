@@ -4,13 +4,13 @@
 // ============================================================================
 
 import { DiagnosticSeverity, Diagnostic } from 'vscode-languageserver';
-import { createDiagnostic } from '../utils/diagnostic-factory';
+import { createDiagnostic } from '../utils/diagnostics';
 import { isNullableType, extractParameterTypes, ParameterInfo } from '../utils/type-utils';
 import { resolveClassName } from '../utils/type-resolving';
 import { isEscapedQuote } from '../utils/text-processing';
-import { CHAR_OFFSETS, PARAMETER_INDEX_OFFSET, INITIAL_DEPTHS, DEFAULT_POSITIONS, INDICES, ERROR_MESSAGES } from '../config/constants';
-import { IDENTIFIER_PATTERNS, TEXT_PROCESSING_PATTERNS } from '../config/regex-patterns';
-import { FunctionData, ClassInfo, ArgumentInfo } from '../types';
+import { CHAR_OFFSETS, PARAMETER_INDEX_OFFSET, INITIAL_DEPTHS, DEFAULT_POSITIONS, INDICES, ERROR_MESSAGES } from '../config/config';
+import { IDENTIFIER_PATTERNS, TEXT_PROCESSING_PATTERNS } from '../config/config';
+import { FunctionData, ClassInfo, ArgumentInfo } from '../config/types';
 
 /**
  * Creates a diagnostic for NULL assignment to non-nullable parameter.

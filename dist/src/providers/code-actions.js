@@ -6,7 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerCodeActionProvider = registerCodeActionProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");
-const constants_1 = require("../config/constants");
+const config_1 = require("../config/config");
 /**
  * Registers the code action provider for quick fixes and refactorings
  */
@@ -54,7 +54,7 @@ function createCodeActionsForDiagnostic(diagnostic, _params, uri) {
         actions.push(createCloseStringAction(diagnostic, uri));
     }
     // Handle unexpected closing brace
-    if (message === constants_1.ERROR_MESSAGES.UNEXPECTED_CLOSING_BRACE) {
+    if (message === config_1.ERROR_MESSAGES.UNEXPECTED_CLOSING_BRACE) {
         actions.push(createRemoveBraceAction(diagnostic, uri));
     }
     return actions;

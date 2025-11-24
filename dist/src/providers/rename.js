@@ -6,7 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerRenameProvider = registerRenameProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");
-const constants_1 = require("../config/constants");
+const config_1 = require("../config/config");
 /**
  * Registers the rename provider for symbol renaming
  */
@@ -24,7 +24,7 @@ function registerRenameProvider(context) {
         if (!wordInfo)
             return null;
         // Check if this is a renameable symbol
-        if (constants_1.RESERVED_IDENTIFIERS.has(wordInfo.word)) {
+        if (config_1.RESERVED_IDENTIFIERS.has(wordInfo.word)) {
             // Return error for reserved identifiers
             throw new vscode_languageserver_1.ResponseError(1, `Cannot rename reserved identifier '${wordInfo.word}'`);
         }
@@ -46,7 +46,7 @@ function registerRenameProvider(context) {
         if (!isValidIdentifier(newName)) {
             throw new vscode_languageserver_1.ResponseError(1, `'${newName}' is not a valid identifier`);
         }
-        if (constants_1.RESERVED_IDENTIFIERS.has(newName)) {
+        if (config_1.RESERVED_IDENTIFIERS.has(newName)) {
             throw new vscode_languageserver_1.ResponseError(1, `'${newName}' is a reserved identifier`);
         }
         // Get the word at cursor position

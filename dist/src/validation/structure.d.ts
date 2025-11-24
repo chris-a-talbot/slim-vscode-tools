@@ -1,5 +1,5 @@
 import { Diagnostic } from 'vscode-languageserver';
-import { SemicolonResult } from '../types';
+import { SemicolonResult } from '../config/types';
 /**
  * Helper function to validate script structure
  * @param text - The full source text

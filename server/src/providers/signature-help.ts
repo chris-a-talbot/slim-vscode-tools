@@ -1,11 +1,11 @@
 import { SignatureHelpParams, SignatureHelp } from 'vscode-languageserver';
 import { cleanSignature, cleanDocumentationText } from '../utils/text-processing';
-import { getWordAndContextAtPosition } from '../utils/position-utils';
+import { getWordAndContextAtPosition } from '../utils/positions';
 import { resolveClassName } from '../utils/type-resolving';
-import { trackInstanceDefinitions } from '../tracking/instance-tracker';
-import { inferTypeFromExpression } from '../tracking/expression-type-inference';
-import { TEXT_PROCESSING_PATTERNS } from '../config/regex-patterns';
-import { LanguageServerContext } from '../types';
+import { trackInstanceDefinitions } from '../utils/instance';
+import { inferTypeFromExpression } from '../utils/type-info';
+import { TEXT_PROCESSING_PATTERNS } from '../config/config';
+import { LanguageServerContext } from '../config/types';
 
 /**
  * Registers the signature help provider handler.

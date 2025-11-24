@@ -1,6 +1,6 @@
 import { Hover } from 'vscode-languageserver';
-import { WordContext, HoverContext } from '../types';
-import { CLASS_NAMES } from '../config/constants';
+import { WordContext, HoverContext } from '../config/types';
+import { CLASS_NAMES } from '../config/config';
 import { resolveClassName } from './type-resolving';
 import {
     createMethodMarkdown,
@@ -11,8 +11,8 @@ import {
     createInstanceMarkdown,
     createEidosEventMarkdown
 } from './markdown-builder';
-import { ClassInfo, CallbackInfo } from '../types';
-import { EIDOS_EVENT_NAMES } from '../config/constants';
+import { ClassInfo, CallbackInfo } from '../config/types';
+import { EIDOS_EVENT_NAMES } from '../config/config';
 
 /**
  * Creates a hover response with markdown content

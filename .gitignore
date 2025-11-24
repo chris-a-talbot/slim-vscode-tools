@@ -1,2 +1,7 @@
 node_modules
 *.vsix
+*.estlintrc.json
+*.prettierrc
+*.prettierignore
+*.vscodeignore
+*.gitattributes

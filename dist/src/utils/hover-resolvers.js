@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getHoverForWord = getHoverForWord;
-const constants_1 = require("../config/constants");
+const config_1 = require("../config/config");
 const type_resolving_1 = require("./type-resolving");
 const markdown_builder_1 = require("./markdown-builder");
-const constants_2 = require("../config/constants");
+const config_2 = require("../config/config");
 /**
  * Creates a hover response with markdown content
  */
@@ -41,19 +41,19 @@ function getClassMemberHover(word, className, classesData) {
  * Gets hover information for LogFile members (LogFile extends Dictionary)
  */
 function getLogFileMemberHover(word, classesData) {
-    if (!classesData[constants_1.CLASS_NAMES.DICTIONARY])
+    if (!classesData[config_1.CLASS_NAMES.DICTIONARY])
         return null;
-    const dictClass = classesData[constants_1.CLASS_NAMES.DICTIONARY];
+    const dictClass = classesData[config_1.CLASS_NAMES.DICTIONARY];
     if (dictClass.methods?.[word]) {
-        return createHoverResponse((0, markdown_builder_1.createMethodMarkdown)(constants_1.CLASS_NAMES.LOGFILE, word, dictClass.methods[word]));
+        return createHoverResponse((0, markdown_builder_1.createMethodMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, dictClass.methods[word]));
     }
     if (dictClass.properties?.[word]) {
-        return createHoverResponse((0, markdown_builder_1.createPropertyMarkdown)(constants_1.CLASS_NAMES.LOGFILE, word, dictClass.properties[word]));
+        return createHoverResponse((0, markdown_builder_1.createPropertyMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, dictClass.properties[word]));
     }
     // Search all classes for LogFile-specific methods
     for (const [, classInfo] of Object.entries(classesData)) {
-        if (classInfo.methods?.[word] && classInfo.methods[word].description?.includes(constants_1.CLASS_NAMES.LOGFILE)) {
-            return createHoverResponse((0, markdown_builder_1.createMethodMarkdown)(constants_1.CLASS_NAMES.LOGFILE, word, classInfo.methods[word]));
+        if (classInfo.methods?.[word] && classInfo.methods[word].description?.includes(config_1.CLASS_NAMES.LOGFILE)) {
+            return createHoverResponse((0, markdown_builder_1.createMethodMarkdown)(config_1.CLASS_NAMES.LOGFILE, word, classInfo.methods[word]));
         }
     }
     return null;
@@ -74,7 +74,7 @@ function getAnyClassMemberHover(word, classesData) {
  */
 function getCallbackHover(word, callbacksData) {
     // Check if it's an Eidos event
-    if (constants_2.EIDOS_EVENT_NAMES.includes(word) && callbacksData['Eidos events']) {
+    if (config_2.EIDOS_EVENT_NAMES.includes(word) && callbacksData['Eidos events']) {
         return createHoverResponse((0, markdown_builder_1.createEidosEventMarkdown)(word, callbacksData['Eidos events']));
     }
     // Check other callbacks
@@ -112,7 +112,7 @@ function getHoverForWord(word, context, hoverContext) {
             test: (ctx) => !!ctx.isMethodOrProperty && !!ctx.className,
             resolve: (w, ctx, _hCtx) => {
                 const className = resolveClassForHover(ctx.className, instanceDefinitions, classesData);
-                if (className === constants_1.CLASS_NAMES.LOGFILE) {
+                if (className === config_1.CLASS_NAMES.LOGFILE) {
                     return getLogFileMemberHover(w, classesData);
                 }
                 return getClassMemberHover(w, className, classesData);

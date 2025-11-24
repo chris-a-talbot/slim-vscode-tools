@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { getOperatorAtPosition, getWordAndContextAtPosition, getAutocompleteContextAtPosition } from '../../../src/utils/position-utils';
+import { getOperatorAtPosition, getWordAndContextAtPosition, getAutocompleteContextAtPosition } from '../../../src/utils/positions';
 import type { Position } from 'vscode-languageserver';
 
 function pos(line: number, character: number): Position {
@@ -29,7 +29,6 @@ describe('getWordAndContextAtPosition', () => {
   it('returns method context when cursor is on method name', () => {
     const info = getWordAndContextAtPosition(text, pos(0, 6), {
       instanceDefinitions: { sim: 'SLiMSim' },
-      classesData: { SLiMSim: {} },
       resolveClassName: (name) => (name === 'sim' ? 'SLiMSim' : null),
     });
     expect(info).not.toBeNull();
@@ -42,7 +41,6 @@ describe('getWordAndContextAtPosition', () => {
   it('returns instance context when cursor is on object name', () => {
     const info = getWordAndContextAtPosition(text, pos(1, 1), {
       instanceDefinitions: { obj: 'SomeClass' },
-      classesData: { SomeClass: {} },
     });
     expect(info).not.toBeNull();
     expect(info!.word).toBe('obj');

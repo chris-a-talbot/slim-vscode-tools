@@ -1,6 +1,6 @@
 import { cleanSignature, cleanTypeNames, cleanDocumentationText } from './text-processing';
-import { TICK_CYCLE_INFO } from '../config/constants';
-import { MethodInfo, PropertyInfo, FunctionData, CallbackInfo, TypeInfo, OperatorInfo, ConstructorInfo } from '../types';
+import { TICK_CYCLE_INFO } from '../config/config';
+import { MethodInfo, PropertyInfo, FunctionData, CallbackInfo, TypeInfo, OperatorInfo, ConstructorInfo } from '../config/types';
 
 // Alias FunctionData as FunctionInfo for compatibility
 type FunctionInfo = FunctionData;

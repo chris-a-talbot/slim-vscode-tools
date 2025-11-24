@@ -1,10 +1,11 @@
-import { getOperatorAtPosition, getWordAndContextAtPosition } from '../utils/position-utils';
-import { trackInstanceDefinitions } from '../tracking/instance-tracker';
-import { inferTypeFromExpression } from '../tracking/expression-type-inference';
+import { HoverParams } from 'vscode-languageserver';
+import { getOperatorAtPosition, getWordAndContextAtPosition } from '../utils/positions';
+import { trackInstanceDefinitions } from '../utils/instance';
+import { inferTypeFromExpression } from '../utils/type-info';
 import { resolveClassName } from '../utils/type-resolving';
 import { createOperatorMarkdown } from '../utils/markdown-builder';
-import { HoverContext } from '../types';
-import { LanguageServerContext } from '../types';
+import { HoverContext } from '../config/types';
+import { LanguageServerContext } from '../config/types';
 import { getHoverForWord } from '../utils/hover-resolvers';
 
 /**
@@ -19,7 +20,7 @@ export function registerHoverProvider(context: LanguageServerContext): void {
     const typesData = documentationService.getTypes();
     const operatorsData = documentationService.getOperators();
     
-    connection.onHover((params) => {
+    connection.onHover((params: HoverParams) => {
         const document = documents.get(params.textDocument.uri);
         if (!document) return null;
 

@@ -1,1 +1,1 @@
-{"version":3,"file":"rename.d.ts","sourceRoot":"","sources":["../../../server/src/providers/rename.ts"],"names":[],"mappings":"AAaA,OAAO,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAGjD;;GAEG;AACH,wBAAgB,sBAAsB,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CAmE3E"}
+{"version":3,"file":"rename.d.ts","sourceRoot":"","sources":["../../../server/src/providers/rename.ts"],"names":[],"mappings":"AAaA,OAAO,EAAE,qBAAqB,EAAE,MAAM,iBAAiB,CAAC;AAGxD;;GAEG;AACH,wBAAgB,sBAAsB,CAAC,OAAO,EAAE,qBAAqB,GAAG,IAAI,CAmE3E"}

@@ -6,7 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerDefinitionProvider = registerDefinitionProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");
-const regex_patterns_1 = require("../config/regex-patterns");
+const config_1 = require("../config/config");
 /**
  * Registers the definition provider for Go to Definition
  */
@@ -70,7 +70,7 @@ function findDefinition(text, word, uri) {
             }
         }
         // Check for constant definition: defineConstant("word", ...)
-        const constantMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.DEFINE_CONSTANT);
+        const constantMatch = line.match(config_1.DEFINITION_PATTERNS.DEFINE_CONSTANT);
         if (constantMatch && constantMatch[1] === word) {
             const index = line.indexOf(word);
             if (index !== -1) {
@@ -78,7 +78,7 @@ function findDefinition(text, word, uri) {
             }
         }
         // Check for subpopulation definition: sim.addSubpop("pX", ...)
-        const subpopMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.SUBPOP);
+        const subpopMatch = line.match(config_1.DEFINITION_PATTERNS.SUBPOP);
         if (subpopMatch && subpopMatch[1] === word) {
             const index = line.indexOf(word);
             if (index !== -1) {
@@ -86,7 +86,7 @@ function findDefinition(text, word, uri) {
             }
         }
         // Check for mutation type: initializeMutationType("mX", ...)
-        const mutationTypeMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.MUTATION_TYPE);
+        const mutationTypeMatch = line.match(config_1.DEFINITION_PATTERNS.MUTATION_TYPE);
         if (mutationTypeMatch && mutationTypeMatch[1] === word) {
             const index = line.indexOf(word);
             if (index !== -1) {
@@ -94,7 +94,7 @@ function findDefinition(text, word, uri) {
             }
         }
         // Check for genomic element type: initializeGenomicElementType("gX", ...)
-        const genomicElementMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.GENOMIC_ELEMENT_TYPE);
+        const genomicElementMatch = line.match(config_1.DEFINITION_PATTERNS.GENOMIC_ELEMENT_TYPE);
         if (genomicElementMatch && genomicElementMatch[1] === word) {
             const index = line.indexOf(word);
             if (index !== -1) {
@@ -102,7 +102,7 @@ function findDefinition(text, word, uri) {
             }
         }
         // Check for interaction type: initializeInteractionType("iX", ...)
-        const interactionTypeMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.INTERACTION_TYPE);
+        const interactionTypeMatch = line.match(config_1.DEFINITION_PATTERNS.INTERACTION_TYPE);
         if (interactionTypeMatch && interactionTypeMatch[1] === word) {
             const index = line.indexOf(word);
             if (index !== -1) {
@@ -110,7 +110,7 @@ function findDefinition(text, word, uri) {
             }
         }
         // Check for species: initializeSpecies("speciesX", ...)
-        const speciesMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.SPECIES);
+        const speciesMatch = line.match(config_1.DEFINITION_PATTERNS.SPECIES);
         if (speciesMatch && speciesMatch[1] === word) {
             const index = line.indexOf(word);
             if (index !== -1) {
@@ -128,18 +128,18 @@ function findDefinition(text, word, uri) {
         // Check for callback definitions with script block IDs
         // e.g., s1.registerEarlyEvent(NULL, "{ ... }", 1, sX);
         const callbackPatterns = [
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.EARLY_EVENT,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.FIRST_EVENT,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.LATE_EVENT,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.FITNESS_EFFECT_CALLBACK,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.INTERACTION_CALLBACK,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MATE_CHOICE_CALLBACK,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MODIFY_CHILD_CALLBACK,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_CALLBACK,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_EFFECT_CALLBACK,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.RECOMBINATION_CALLBACK,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.REPRODUCTION_CALLBACK,
-            regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.SURVIVAL_CALLBACK
+            config_1.CALLBACK_REGISTRATION_PATTERNS.EARLY_EVENT,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.FIRST_EVENT,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.LATE_EVENT,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.FITNESS_EFFECT_CALLBACK,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.INTERACTION_CALLBACK,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.MATE_CHOICE_CALLBACK,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.MODIFY_CHILD_CALLBACK,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_CALLBACK,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_EFFECT_CALLBACK,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.RECOMBINATION_CALLBACK,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.REPRODUCTION_CALLBACK,
+            config_1.CALLBACK_REGISTRATION_PATTERNS.SURVIVAL_CALLBACK
         ];
         for (const pattern of callbackPatterns) {
             const match = line.match(pattern);

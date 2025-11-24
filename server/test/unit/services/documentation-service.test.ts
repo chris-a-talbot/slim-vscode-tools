@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { DocumentationService } from '../../../src/services/documentation-service';
-import type { ClassInfo } from '../../../src/types';
+import { DocumentationService } from '../../../src/utils/documentation-service';
+import type { ClassInfo } from '../../../src/config/types';
 
 describe('DocumentationService transformations', () => {
   it('transformFunctionData extracts return type and cleans signature', () => {

@@ -9,10 +9,10 @@ import {
     InlayHintParams,
     Position
 } from 'vscode-languageserver';
-import { LanguageServerContext } from '../types';
-import { trackInstanceDefinitions } from '../tracking/instance-tracker';
-import { inferTypeFromExpression } from '../tracking/expression-type-inference';
-import { DEFINITION_PATTERNS } from '../config/regex-patterns';
+import { LanguageServerContext } from '../config/types';
+import { trackInstanceDefinitions } from '../utils/instance';
+import { inferTypeFromExpression } from '../utils/type-info';
+import { DEFINITION_PATTERNS } from '../config/config';
 
 /**
  * Registers the inlay hints provider for type annotations

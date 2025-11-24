@@ -9,8 +9,8 @@ import {
     Position,
     Range
 } from 'vscode-languageserver';
-import { LanguageServerContext } from '../types';
-import { DEFINITION_PATTERNS, CALLBACK_REGISTRATION_PATTERNS } from '../config/regex-patterns';
+import { LanguageServerContext } from '../config/types';
+import { DEFINITION_PATTERNS, CALLBACK_REGISTRATION_PATTERNS } from '../config/config';
 
 /**
  * Registers the definition provider for Go to Definition

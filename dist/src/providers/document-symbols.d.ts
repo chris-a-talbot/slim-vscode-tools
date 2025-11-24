@@ -1,4 +1,4 @@
-import { LanguageServerContext } from '../types';
+import { LanguageServerContext } from '../config/types';
 /**
  * Registers the document symbols provider handler.
  * Provides document symbols (outline) for the document.

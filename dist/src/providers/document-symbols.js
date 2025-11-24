@@ -1,11 +1,11 @@
 "use strict";
 // ============================================================================
 // DOCUMENT SYMBOLS PROVIDER
-// This file contains the code to generate document symbols (the outline view).
+// Generates document symbols (the outline view).
 // ============================================================================
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerDocumentSymbolsProvider = registerDocumentSymbolsProvider;
-const constants_1 = require("../config/constants");
+const config_1 = require("../config/config");
 /**
  * Registers the document symbols provider handler.
  * Provides document symbols (outline) for the document.
@@ -26,7 +26,7 @@ function registerDocumentSymbolsProvider(context) {
             if (functionMatch) {
                 symbols.push({
                     name: functionMatch[1],
-                    kind: constants_1.COMPLETION_KINDS.FUNCTION,
+                    kind: config_1.COMPLETION_KINDS.FUNCTION,
                     range: {
                         start: { line: index, character: 0 },
                         end: { line: index, character: line.length }
@@ -41,7 +41,7 @@ function registerDocumentSymbolsProvider(context) {
             // - callbackName() { }
             // - 123 callbackName() { }
             // - 123:456 callbackName() { }
-            const callbackPattern = new RegExp(`^\\s*(?:(?:\\d+:\\d+|\\d+)\\s+)?(${constants_1.CALLBACK_NAMES.join('|')})\\s*\\(\\s*\\)\\s*\\{`);
+            const callbackPattern = new RegExp(`^\\s*(?:(?:\\d+:\\d+|\\d+)\\s+)?(${config_1.CALLBACK_NAMES.join('|')})\\s*\\(\\s*\\)\\s*\\{`);
             const callbackMatch = line.match(callbackPattern);
             if (callbackMatch) {
                 const callbackName = callbackMatch[1];
@@ -51,7 +51,7 @@ function registerDocumentSymbolsProvider(context) {
                 const displayName = tickInfo + callbackName + '()';
                 symbols.push({
                     name: displayName,
-                    kind: constants_1.COMPLETION_KINDS.METHOD, // Use METHOD to differentiate from functions
+                    kind: config_1.COMPLETION_KINDS.METHOD, // Use METHOD to differentiate from functions
                     range: {
                         start: { line: index, character: 0 },
                         end: { line: index, character: line.length }

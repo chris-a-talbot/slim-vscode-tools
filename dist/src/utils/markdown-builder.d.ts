@@ -1,4 +1,4 @@
-import { MethodInfo, PropertyInfo, FunctionData, CallbackInfo, TypeInfo, OperatorInfo, ConstructorInfo } from '../types';
+import { MethodInfo, PropertyInfo, FunctionData, CallbackInfo, TypeInfo, OperatorInfo, ConstructorInfo } from '../config/types';
 type FunctionInfo = FunctionData;
 /**
  * Creates markdown documentation for a method.

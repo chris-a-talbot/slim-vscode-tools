@@ -9,7 +9,7 @@ import {
     Position,
     Range
 } from 'vscode-languageserver';
-import { LanguageServerContext } from '../types';
+import { LanguageServerContext } from '../config/types';
 
 /**
  * Registers the references provider for Find All References

@@ -1,34 +1,24 @@
-import type { ParseState, ParseOptions, BraceCounts } from '../types';
+import type { ParseState, ParseOptions, BraceCounts } from '../config/types';
 export type { ParseState, ParseOptions, BraceCounts };
 /**
  * Expands Eidos/SLiM type abbreviations to readable base type names.
  * Type abbreviations: N = nullable, i = integer, o = object, l = logical, s = string, f = float
  * Examples: Ni -> integer, No<Class> -> object<Class>, Nl -> logical
- * @param text - The text to expand
- * @returns Text with abbreviations expanded to base types
  */
 export declare function expandTypeAbbreviations(text: string): string;
 /**
- * Cleans type names in signatures and descriptions by removing trailing dollar signs.
- * In SLiM/Eidos, $ indicates singleton types (single value), while no $ indicates vectors.
- * We remove $ for display clarity, but preserve it internally for type inference.
- * Also expands type abbreviations for better readability.
- * @param text - The text to clean
- * @returns Text with $ removed from type names and abbreviations expanded
+ * Cleans type names by removing trailing dollar signs and expanding abbreviations.
+ * In SLiM/Eidos, $ indicates singleton types (single value), no $ = vector.
  */
 export declare function cleanTypeNames(text: string): string;
 /**
- * Cleans signatures by removing trailing dollar signs from type names,
- * expanding type abbreviations, and removing "object<" prefix from generic types.
- * @param signature - The signature to clean
- * @returns Cleaned signature
+ * Cleans signatures by removing $ from type names, expanding abbreviations,
+ * and simplifying object<> notation.
  */
 export declare function cleanSignature(signature: string): string;
 /**
  * Cleans documentation text by decoding HTML entities, removing type suffixes,
  * and converting HTML tags to markdown.
- * @param text - The text to clean
- * @returns Cleaned text
  */
 export declare function cleanDocumentationText(text: string): string;
 /**

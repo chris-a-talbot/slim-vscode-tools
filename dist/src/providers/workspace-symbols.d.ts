@@ -1,4 +1,4 @@
-import { LanguageServerContext } from '../types';
+import { LanguageServerContext } from '../config/types';
 /**
  * Registers the workspace symbols provider
  */

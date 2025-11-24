@@ -10,7 +10,7 @@ exports.createInstanceMarkdown = createInstanceMarkdown;
 exports.createEidosEventMarkdown = createEidosEventMarkdown;
 exports.createConstructorMarkdown = createConstructorMarkdown;
 const text_processing_1 = require("./text-processing");
-const constants_1 = require("../config/constants");
+const config_1 = require("../config/config");
 /**
  * Normalizes callback key for tick cycle lookup.
  * @param signature - The callback signature
@@ -21,9 +21,9 @@ function normalizeTickCycleKey(signature, callbackName) {
     let key = signature.replace(/\s+callbacks?$/i, '').trim();
     if (!key.includes('('))
         key += '()';
-    if (!constants_1.TICK_CYCLE_INFO[key]) {
+    if (!config_1.TICK_CYCLE_INFO[key]) {
         const altKey = callbackName.replace(/\s+callbacks?$/i, '').trim();
-        if (altKey && constants_1.TICK_CYCLE_INFO[altKey])
+        if (altKey && config_1.TICK_CYCLE_INFO[altKey])
             return altKey;
     }
     return key;
@@ -34,7 +34,7 @@ function normalizeTickCycleKey(signature, callbackName) {
  * @returns Markdown string with tick cycle information, or empty string if not found
  */
 function createTickCycleSection(tickCycleKey) {
-    const info = constants_1.TICK_CYCLE_INFO[tickCycleKey];
+    const info = config_1.TICK_CYCLE_INFO[tickCycleKey];
     return info ? `\n\n**Tick Cycle:**\n- **WF model:** ${info.wf}\n- **nonWF model:** ${info.nonwf}\n` : '';
 }
 /**
@@ -115,7 +115,7 @@ function createInstanceMarkdown(instanceName, instanceClass) {
  */
 function createEidosEventMarkdown(eventName, eventInfo) {
     const fullEventName = eventName + '()';
-    const tickCycleInfo = constants_1.TICK_CYCLE_INFO[fullEventName];
+    const tickCycleInfo = config_1.TICK_CYCLE_INFO[fullEventName];
     const tickCycleSection = tickCycleInfo ? `\n\n**Tick Cycle:**\n- **WF model:** ${tickCycleInfo.wf}\n- **nonWF model:** ${tickCycleInfo.nonwf}\n` : '';
     return `**${fullEventName}** (Eidos event)\n\n\`\`\`slim\n${fullEventName}\n\`\`\`${tickCycleSection}\n${(0, text_processing_1.cleanDocumentationText)(eventInfo.description)}`;
 }

@@ -6,7 +6,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.registerWorkspaceSymbolsProvider = registerWorkspaceSymbolsProvider;
 const vscode_languageserver_1 = require("vscode-languageserver");
-const regex_patterns_1 = require("../config/regex-patterns");
+const config_1 = require("../config/config");
 /**
  * Registers the workspace symbols provider
  */
@@ -43,7 +43,7 @@ function findSymbolsInDocument(text, uri, query) {
             }
         }
         // Find constants
-        const constantMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.DEFINE_CONSTANT);
+        const constantMatch = line.match(config_1.DEFINITION_PATTERNS.DEFINE_CONSTANT);
         if (constantMatch) {
             const name = constantMatch[1];
             if (matchesQuery(name, query)) {
@@ -51,7 +51,7 @@ function findSymbolsInDocument(text, uri, query) {
             }
         }
         // Find mutation types
-        const mutationTypeMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.MUTATION_TYPE);
+        const mutationTypeMatch = line.match(config_1.DEFINITION_PATTERNS.MUTATION_TYPE);
         if (mutationTypeMatch) {
             const name = mutationTypeMatch[1];
             if (matchesQuery(name, query)) {
@@ -59,7 +59,7 @@ function findSymbolsInDocument(text, uri, query) {
             }
         }
         // Find genomic element types
-        const genomicElementMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.GENOMIC_ELEMENT_TYPE);
+        const genomicElementMatch = line.match(config_1.DEFINITION_PATTERNS.GENOMIC_ELEMENT_TYPE);
         if (genomicElementMatch) {
             const name = genomicElementMatch[1];
             if (matchesQuery(name, query)) {
@@ -67,7 +67,7 @@ function findSymbolsInDocument(text, uri, query) {
             }
         }
         // Find interaction types
-        const interactionTypeMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.INTERACTION_TYPE);
+        const interactionTypeMatch = line.match(config_1.DEFINITION_PATTERNS.INTERACTION_TYPE);
         if (interactionTypeMatch) {
             const name = interactionTypeMatch[1];
             if (matchesQuery(name, query)) {
@@ -75,7 +75,7 @@ function findSymbolsInDocument(text, uri, query) {
             }
         }
         // Find subpopulations
-        const subpopMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.SUBPOP);
+        const subpopMatch = line.match(config_1.DEFINITION_PATTERNS.SUBPOP);
         if (subpopMatch) {
             const name = subpopMatch[1];
             if (matchesQuery(name, query)) {
@@ -83,7 +83,7 @@ function findSymbolsInDocument(text, uri, query) {
             }
         }
         // Find species
-        const speciesMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.SPECIES);
+        const speciesMatch = line.match(config_1.DEFINITION_PATTERNS.SPECIES);
         if (speciesMatch) {
             const name = speciesMatch[1];
             if (matchesQuery(name, query)) {
@@ -101,18 +101,18 @@ function findSymbolsInDocument(text, uri, query) {
         }
         // Find callback definitions
         const callbackPatterns = [
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.EARLY_EVENT, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.FIRST_EVENT, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.LATE_EVENT, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.FITNESS_EFFECT_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.INTERACTION_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MATE_CHOICE_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MODIFY_CHILD_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_EFFECT_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.RECOMBINATION_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.REPRODUCTION_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
-            { pattern: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.SURVIVAL_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event }
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.EARLY_EVENT, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.FIRST_EVENT, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.LATE_EVENT, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.FITNESS_EFFECT_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.INTERACTION_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.MATE_CHOICE_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.MODIFY_CHILD_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_EFFECT_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.RECOMBINATION_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.REPRODUCTION_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event },
+            { pattern: config_1.CALLBACK_REGISTRATION_PATTERNS.SURVIVAL_CALLBACK, kind: vscode_languageserver_1.SymbolKind.Event }
         ];
         for (const { pattern, kind } of callbackPatterns) {
             const match = line.match(pattern);

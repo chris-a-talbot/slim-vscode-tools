@@ -1,5 +1,5 @@
 import { Hover } from 'vscode-languageserver';
-import { WordContext, HoverContext } from '../types';
+import { WordContext, HoverContext } from '../config/types';
 /**
  * Gets hover information for a word using a strategy-based lookup table.
  * This replaces the long if-else chain with a declarative configuration.

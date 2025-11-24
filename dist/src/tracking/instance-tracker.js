@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.trackInstanceDefinitions = trackInstanceDefinitions;
-const constants_1 = require("../config/constants");
-const expression_type_inference_1 = require("./expression-type-inference");
-const constants_2 = require("../config/constants");
-const regex_patterns_1 = require("../config/regex-patterns");
-const constants_3 = require("../config/constants");
-const constants_4 = require("../config/constants");
+const config_1 = require("../config/config");
+const type_info_1 = require("../utils/type-info");
+const config_2 = require("../config/config");
+const config_3 = require("../config/config");
+const config_4 = require("../config/config");
+const config_5 = require("../config/config");
 function createTrackingState() {
     return {
         instanceDefinitions: {},
@@ -16,11 +16,13 @@ function createTrackingState() {
         definedInteractionTypes: new Set(),
         definedSubpopulations: new Set(),
         definedScriptBlocks: new Set(),
-        definedSpecies: new Set()
+        definedSpecies: new Set(),
+        modelType: null,
+        callbackContextByLine: new Map()
     };
 }
 function detectCallbackDefinition(line) {
-    const callbackPattern = new RegExp(`(?:species\\s+\\w+\\s+)?(?:s\\d+\\s+)?(?:\\d+(?::\\d+)?\\s+)?(${constants_3.CALLBACK_NAMES.join('|')})\\s*\\([^)]*\\)\\s*\\{`, 'i');
+    const callbackPattern = new RegExp(`(?:species\\s+\\w+\\s+)?(?:s\\d+\\s+)?(?:\\d+(?::\\d+)?\\s+)?(${config_4.CALLBACK_NAMES.join('|')})\\s*\\([^)]*\\)\\s*\\{`, 'i');
     const match = line.match(callbackPattern);
     if (match) {
         const callbackName = match[1].toLowerCase();
@@ -43,7 +45,7 @@ function updateCallbackState(line, lineIndex, state, callbackState) {
         newCallbackStartLine = lineIndex;
         newBraceDepth = 0; // Reset brace depth for this callback block
         // Add pseudo-parameters for this callback
-        const pseudoParams = constants_1.CALLBACK_PSEUDO_PARAMETERS[detectedCallback];
+        const pseudoParams = config_1.CALLBACK_PSEUDO_PARAMETERS[detectedCallback];
         if (pseudoParams) {
             // Object.entries loses the key/value typing, so we re-assert it here.
             for (const [paramName, paramType] of Object.entries(pseudoParams)) {
@@ -69,7 +71,7 @@ function updateCallbackState(line, lineIndex, state, callbackState) {
     };
 }
 function trackConstant(line, lineIndex, lines, state) {
-    const constantMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.DEFINE_CONSTANT);
+    const constantMatch = line.match(config_3.DEFINITION_PATTERNS.DEFINE_CONSTANT);
     if (!constantMatch)
         return;
     const constName = constantMatch[1];
@@ -77,32 +79,32 @@ function trackConstant(line, lineIndex, lines, state) {
         state.definedConstants.add(constName);
     }
     // Try to infer type from the value in defineConstant("NAME", value)
-    const constValueMatch = line.match(regex_patterns_1.DEFINITION_PATTERNS.CONSTANT_VALUE);
+    const constValueMatch = line.match(config_3.DEFINITION_PATTERNS.CONSTANT_VALUE);
     if (constValueMatch) {
         // Single-line case: value is on the same line
         const valueExpr = constValueMatch[1].trim();
         const cleanValue = valueExpr.replace(/\)\s*$/, '').trim();
-        const inferredType = (0, expression_type_inference_1.inferTypeFromExpression)(cleanValue);
+        const inferredType = (0, type_info_1.inferTypeFromExpression)(cleanValue);
         if (inferredType) {
             state.instanceDefinitions[constName] = inferredType;
         }
     }
     else {
         // Multi-line case: value might be on the next line(s)
-        for (let lookAhead = constants_2.INDICES.SECOND; lookAhead <= constants_2.LOOKAHEAD_LIMITS.CONSTANT_VALUE && lineIndex + lookAhead < lines.length; lookAhead++) {
+        for (let lookAhead = config_2.INDICES.SECOND; lookAhead <= config_2.LOOKAHEAD_LIMITS.CONSTANT_VALUE && lineIndex + lookAhead < lines.length; lookAhead++) {
             const nextLine = lines[lineIndex + lookAhead].trim();
             if (!nextLine || nextLine.startsWith('//'))
                 continue;
             if (nextLine.includes(')')) {
                 const valuePart = nextLine.split(')')[0].trim();
-                const inferredType = (0, expression_type_inference_1.inferTypeFromExpression)(valuePart);
+                const inferredType = (0, type_info_1.inferTypeFromExpression)(valuePart);
                 if (inferredType) {
                     state.instanceDefinitions[constName] = inferredType;
                 }
                 break;
             }
             else {
-                const inferredType = (0, expression_type_inference_1.inferTypeFromExpression)(nextLine);
+                const inferredType = (0, type_info_1.inferTypeFromExpression)(nextLine);
                 if (inferredType) {
                     state.instanceDefinitions[constName] = inferredType;
                     break;
@@ -141,11 +143,11 @@ function trackTypeDefinitions(line, patterns, state) {
 function trackSubpopulations(line, patterns, state) {
     let match;
     if ((match = line.match(patterns.subpop)) !== null || (match = line.match(patterns.subpopSplit)) !== null) {
-        const subpopName = match[constants_2.INDICES.SECOND];
+        const subpopName = match[config_2.INDICES.SECOND];
         if (!state.definedSubpopulations.has(subpopName)) {
             state.definedSubpopulations.add(subpopName);
         }
-        state.instanceDefinitions[subpopName] = constants_4.CLASS_NAMES.SUBPOPULATION;
+        state.instanceDefinitions[subpopName] = config_5.CLASS_NAMES.SUBPOPULATION;
     }
 }
 function trackScriptBlocks(line, patterns, state) {
@@ -158,38 +160,38 @@ function trackScriptBlocks(line, patterns, state) {
     for (const pattern of scriptBlockPatterns) {
         const match = line.match(pattern);
         if (match !== null) {
-            const blockId = match[constants_2.INDICES.SECOND];
+            const blockId = match[config_2.INDICES.SECOND];
             if (!state.definedScriptBlocks.has(blockId)) {
                 state.definedScriptBlocks.add(blockId);
             }
-            state.instanceDefinitions[blockId] = constants_4.CLASS_NAMES.SLIMEIDOS_BLOCK;
+            state.instanceDefinitions[blockId] = config_5.CLASS_NAMES.SLIMEIDOS_BLOCK;
             break; // Only match one pattern per line
         }
     }
 }
 function createDefinitionPatterns() {
     return {
-        instance: regex_patterns_1.DEFINITION_PATTERNS.INSTANCE,
-        assignment: regex_patterns_1.DEFINITION_PATTERNS.ASSIGNMENT,
-        subpop: regex_patterns_1.DEFINITION_PATTERNS.SUBPOP,
-        subpopSplit: regex_patterns_1.DEFINITION_PATTERNS.SUBPOP_SPLIT,
-        constant: regex_patterns_1.DEFINITION_PATTERNS.DEFINE_CONSTANT,
-        mutationType: regex_patterns_1.DEFINITION_PATTERNS.MUTATION_TYPE,
-        genomicElementType: regex_patterns_1.DEFINITION_PATTERNS.GENOMIC_ELEMENT_TYPE,
-        interactionType: regex_patterns_1.DEFINITION_PATTERNS.INTERACTION_TYPE,
-        species: regex_patterns_1.DEFINITION_PATTERNS.SPECIES,
-        earlyEvent: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.EARLY_EVENT,
-        firstEvent: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.FIRST_EVENT,
-        interactionCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.INTERACTION_CALLBACK,
-        lateEvent: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.LATE_EVENT,
-        fitnessEffectCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.FITNESS_EFFECT_CALLBACK,
-        mateChoiceCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MATE_CHOICE_CALLBACK,
-        modifyChildCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MODIFY_CHILD_CALLBACK,
-        mutationCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_CALLBACK,
-        mutationEffectCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.MUTATION_EFFECT_CALLBACK,
-        recombinationCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.RECOMBINATION_CALLBACK,
-        reproductionCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.REPRODUCTION_CALLBACK,
-        survivalCallback: regex_patterns_1.CALLBACK_REGISTRATION_PATTERNS.SURVIVAL_CALLBACK
+        instance: config_3.DEFINITION_PATTERNS.INSTANCE,
+        assignment: config_3.DEFINITION_PATTERNS.ASSIGNMENT,
+        subpop: config_3.DEFINITION_PATTERNS.SUBPOP,
+        subpopSplit: config_3.DEFINITION_PATTERNS.SUBPOP_SPLIT,
+        constant: config_3.DEFINITION_PATTERNS.DEFINE_CONSTANT,
+        mutationType: config_3.DEFINITION_PATTERNS.MUTATION_TYPE,
+        genomicElementType: config_3.DEFINITION_PATTERNS.GENOMIC_ELEMENT_TYPE,
+        interactionType: config_3.DEFINITION_PATTERNS.INTERACTION_TYPE,
+        species: config_3.DEFINITION_PATTERNS.SPECIES,
+        earlyEvent: config_3.CALLBACK_REGISTRATION_PATTERNS.EARLY_EVENT,
+        firstEvent: config_3.CALLBACK_REGISTRATION_PATTERNS.FIRST_EVENT,
+        interactionCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.INTERACTION_CALLBACK,
+        lateEvent: config_3.CALLBACK_REGISTRATION_PATTERNS.LATE_EVENT,
+        fitnessEffectCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.FITNESS_EFFECT_CALLBACK,
+        mateChoiceCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.MATE_CHOICE_CALLBACK,
+        modifyChildCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.MODIFY_CHILD_CALLBACK,
+        mutationCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.MUTATION_CALLBACK,
+        mutationEffectCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.MUTATION_EFFECT_CALLBACK,
+        recombinationCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.RECOMBINATION_CALLBACK,
+        reproductionCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.REPRODUCTION_CALLBACK,
+        survivalCallback: config_3.CALLBACK_REGISTRATION_PATTERNS.SURVIVAL_CALLBACK
     };
 }
 function trackInstanceAssignments(line, patterns, state) {
@@ -201,7 +203,7 @@ function trackInstanceAssignments(line, patterns, state) {
     // Track type inference from assignments
     if ((match = line.match(patterns.assignment)) !== null) {
         const rhs = match[2].trim();
-        const inferredType = (0, expression_type_inference_1.inferTypeFromExpression)(rhs);
+        const inferredType = (0, type_info_1.inferTypeFromExpression)(rhs);
         if (inferredType) {
             state.instanceDefinitions[match[1]] = inferredType;
         }
@@ -210,6 +212,11 @@ function trackInstanceAssignments(line, patterns, state) {
 function processLine(line, lineIndex, lines, patterns, trackingState, callbackState) {
     // Update callback tracking state
     const updatedCallbackState = updateCallbackState(line, lineIndex, trackingState, callbackState);
+    // Store callback context for this line (using Map.set())
+    const currentCallback = updatedCallbackState.currentCallback;
+    trackingState.callbackContextByLine.set(lineIndex, currentCallback);
+    // Detect model type from initializeSLiMModelType()
+    trackModelType(line, trackingState);
     // Track constants and infer their types
     trackConstant(line, lineIndex, lines, trackingState);
     // Track type definitions
@@ -221,6 +228,16 @@ function processLine(line, lineIndex, lines, patterns, trackingState, callbackSt
     // Track instance definitions and assignments
     trackInstanceAssignments(line, patterns, trackingState);
     return updatedCallbackState;
+}
+function trackModelType(line, state) {
+    // Match initializeSLiMModelType("WF") or initializeSLiMModelType("nonWF")
+    const modelTypeMatch = line.match(/initializeSLiMModelType\s*\(\s*["'](\w+)["']\s*\)/);
+    if (modelTypeMatch) {
+        const type = modelTypeMatch[1];
+        if (type === 'WF' || type === 'nonWF') {
+            state.modelType = type;
+        }
+    }
 }
 function trackInstanceDefinitions(document, state) {
     // Create fresh tracking state for this analysis, or use provided state

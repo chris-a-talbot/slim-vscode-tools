@@ -6,7 +6,7 @@ exports.getBaseType = getBaseType;
 exports.isNullableType = isNullableType;
 exports.parseTypeInfo = parseTypeInfo;
 exports.extractParameterTypes = extractParameterTypes;
-const regex_patterns_1 = require("../config/regex-patterns");
+const config_1 = require("../config/config");
 /**
  * Checks if a type string represents a singleton (has $ suffix).
  * In SLiM/Eidos, $ indicates a singleton (single value), no $ indicates a vector.
@@ -16,7 +16,7 @@ const regex_patterns_1 = require("../config/regex-patterns");
 function isSingletonType(type) {
     if (!type)
         return false;
-    return regex_patterns_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX.test(type);
+    return config_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX.test(type);
 }
 /**
  * Checks if a type string represents a vector (no $ suffix).
@@ -27,7 +27,7 @@ function isSingletonType(type) {
 function isVectorType(type) {
     if (!type)
         return false;
-    return !regex_patterns_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX.test(type);
+    return !config_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX.test(type);
 }
 /**
  * Gets the base type without the $ suffix.
@@ -37,7 +37,7 @@ function isVectorType(type) {
 function getBaseType(type) {
     if (!type)
         return type;
-    return type.replace(regex_patterns_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX, '');
+    return type.replace(config_1.TEXT_PROCESSING_PATTERNS.DOLLAR_SUFFIX, '');
 }
 /**
  * Checks if a type string represents a nullable type.
@@ -53,7 +53,7 @@ function isNullableType(type) {
     const baseType = getBaseType(type);
     // Check if it starts with N (nullable indicator in Eidos/SLiM)
     // Examples: Ni (nullable integer), No (nullable object), No<Subpopulation> (nullable generic)
-    return regex_patterns_1.TEXT_PROCESSING_PATTERNS.NULLABLE_TYPE.test(baseType) || regex_patterns_1.TEXT_PROCESSING_PATTERNS.NULLABLE_OBJECT_TYPE.test(baseType);
+    return config_1.TEXT_PROCESSING_PATTERNS.NULLABLE_TYPE.test(baseType) || config_1.TEXT_PROCESSING_PATTERNS.NULLABLE_OBJECT_TYPE.test(baseType);
 }
 /**
  * Parses a type string into detailed type information.
@@ -89,7 +89,7 @@ function extractParameterTypes(signature) {
         return params;
     // Extract the parameter list from parentheses
     // [^)]* matches everything inside parens (handles nested parens in generics)
-    const paramMatch = signature.match(regex_patterns_1.TEXT_PROCESSING_PATTERNS.PARAMETER_LIST);
+    const paramMatch = signature.match(config_1.TEXT_PROCESSING_PATTERNS.PARAMETER_LIST);
     if (!paramMatch)
         return params;
     const paramString = paramMatch[1];
@@ -118,14 +118,14 @@ function extractParameterTypes(signature) {
     for (const param of paramParts) {
         // Match optional parameters: [Ni$ name = NULL] or [integer x = 5]
         // Brackets indicate optional parameters in SLiM/Eidos signatures
-        const optionalMatch = param.match(regex_patterns_1.TEXT_PROCESSING_PATTERNS.OPTIONAL_PARAMETER);
+        const optionalMatch = param.match(config_1.TEXT_PROCESSING_PATTERNS.OPTIONAL_PARAMETER);
         const isOptional = !!optionalMatch;
         const paramContent = optionalMatch ? optionalMatch[1] : param;
         // Extract type and name from parameter
         // Pattern matches: "type name" or "type$ name" or "type<Generic> name" or "type name = default"
         // [\w<>]+ matches type name (including generics like "object<Subpopulation>")
         // (?:\$)? optionally matches $ suffix for vector types
-        const typeNameMatch = paramContent.match(regex_patterns_1.TEXT_PROCESSING_PATTERNS.TYPE_NAME_PARAM);
+        const typeNameMatch = paramContent.match(config_1.TEXT_PROCESSING_PATTERNS.TYPE_NAME_PARAM);
         if (typeNameMatch) {
             params.push({
                 name: typeNameMatch[2],
@@ -136,7 +136,7 @@ function extractParameterTypes(signature) {
         }
         else {
             // Just a type, no name (unlikely)
-            const typeMatch = paramContent.match(regex_patterns_1.TEXT_PROCESSING_PATTERNS.TYPE_ONLY);
+            const typeMatch = paramContent.match(config_1.TEXT_PROCESSING_PATTERNS.TYPE_ONLY);
             if (typeMatch) {
                 params.push({
                     name: null,

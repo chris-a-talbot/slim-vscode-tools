@@ -4,16 +4,16 @@
 // ============================================================================
 
 import { DiagnosticSeverity, Diagnostic } from 'vscode-languageserver';
-import { createDiagnostic } from '../utils/diagnostic-factory';
+import { createDiagnostic } from '../utils/diagnostics';
 import { 
     parseCodeWithStringsAndComments, 
     countParenthesesIgnoringStringsAndComments,
     removeStringsFromLine 
-} from '../utils/text-processing';
-import { DEFAULT_POSITIONS, INITIAL_DEPTHS, CHAR_OFFSETS, INDICES } from '../config/constants';
-import { EVENT_PATTERNS, CONTROL_FLOW_PATTERNS, TEXT_PROCESSING_PATTERNS } from '../config/regex-patterns';
-import { ERROR_MESSAGES } from '../config/constants';
-import { SemicolonResult } from '../types';
+} from '../utils/text';
+import { DEFAULT_POSITIONS, INITIAL_DEPTHS, CHAR_OFFSETS, INDICES } from '../config/config';
+import { EVENT_PATTERNS, CONTROL_FLOW_PATTERNS, TEXT_PROCESSING_PATTERNS } from '../config/config';
+import { ERROR_MESSAGES } from '../config/config';
+import { SemicolonResult } from '../config/types';
 
 /**
  * Helper function to validate script structure

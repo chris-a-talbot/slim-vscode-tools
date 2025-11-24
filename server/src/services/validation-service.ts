@@ -1,19 +1,22 @@
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { DocumentationService } from './documentation-service';
-import { createDiagnostic } from '../utils/diagnostic-factory';
+import { DocumentationService } from '../utils/documentation-service';
+import { createDiagnostic } from '../utils/diagnostics';
 import { validateDefinitions } from '../validation/definitions';
 import { validateScriptStructure, shouldHaveSemicolon } from '../validation/structure';
 import { validateUndefinedReferences } from '../validation/references';
 import { validateMethodOrPropertyCall } from '../validation/method-property';
 import { validateFunctionCalls } from '../validation/function-calls';
 import { validateNullAssignments } from '../validation/null-assignments';
-import { countBracesIgnoringStringsAndComments, removeCommentsAndStringsFromLine } from '../utils/text-processing';
-import { DEFAULT_POSITIONS, INITIAL_DEPTHS } from '../config/constants';
-import { EVENT_PATTERNS } from '../config/regex-patterns';
-import { ERROR_MESSAGES } from '../config/constants';
-import { trackInstanceDefinitions } from '../tracking/instance-tracker';
-import { TrackingState } from '../types';
+import { validateContextRestrictions } from '../validation/context-restrictions';
+import { validateInitializationRules } from '../validation/initialization-rules';
+import { validateInteractionQueries } from '../validation/interaction-queries';
+import { countBracesIgnoringStringsAndComments, removeCommentsAndStringsFromLine } from '../utils/text';
+import { DEFAULT_POSITIONS, INITIAL_DEPTHS } from '../config/config';
+import { EVENT_PATTERNS } from '../config/config';
+import { ERROR_MESSAGES } from '../config/config';
+import { trackInstanceDefinitions } from '../utils/instance';
+import { TrackingState } from '../config/types';
 
 export class ValidationService {
     constructor(private documentationService: DocumentationService) {}
@@ -41,10 +44,9 @@ class DocumentValidator {
     }
 
     public validate(): Diagnostic[] {
-        // Track instance definitions for validation
-        let currentInstanceDefinitions: Record<string, string> | null = null;
+        // Track instance definitions, callback contexts, and model type for validation
         const trackingState: TrackingState = trackInstanceDefinitions(this.document);
-        currentInstanceDefinitions = trackingState.instanceDefinitions;
+        const currentInstanceDefinitions = trackingState.instanceDefinitions;
 
         // Create versions of lines with comments and strings removed for validation
         // This prevents false positives from code-like content in comments/strings
@@ -52,15 +54,18 @@ class DocumentValidator {
         const textWithoutCommentsAndStrings = linesWithoutCommentsAndStrings.join('\n');
 
         // Validate document-level issues (using cleaned versions)
+        // Note: validateInitializationRules uses original text/lines to detect callbacks
         this.diagnostics.push(
             ...validateDefinitions(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings),
             ...validateScriptStructure(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings),
-            ...validateUndefinedReferences(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings)
+            ...validateUndefinedReferences(textWithoutCommentsAndStrings, linesWithoutCommentsAndStrings),
+            ...validateInitializationRules(this.text, this.lines),
+            ...validateInteractionQueries(linesWithoutCommentsAndStrings, trackingState)
         );
 
         // Validate each line
         this.lines.forEach((line, lineIndex) => {
-            this.validateLine(line, lineIndex, currentInstanceDefinitions);
+            this.validateLine(line, lineIndex, currentInstanceDefinitions, trackingState);
         });
 
         // Validate unclosed braces
@@ -72,7 +77,8 @@ class DocumentValidator {
     private validateLine(
         line: string,
         lineIndex: number,
-        instanceDefinitions: Record<string, string> | null
+        instanceDefinitions: Record<string, string> | null,
+        trackingState: TrackingState
     ): void {
         const trimmedLine = line.trim();
         if (!trimmedLine || trimmedLine.startsWith('//')) return;
@@ -97,7 +103,7 @@ class DocumentValidator {
         }
         
         // Validate semantic aspects
-        this.validateSemanticAspects(line, lineIndex, instanceDefinitions);
+        this.validateSemanticAspects(line, lineIndex, instanceDefinitions, trackingState);
     }
 
     private validateBraceBalance(line: string, lineIndex: number, isSlimBlock: boolean): void {
@@ -119,7 +125,8 @@ class DocumentValidator {
     private validateSemanticAspects(
         line: string,
         lineIndex: number,
-        instanceDefinitions: Record<string, string> | null
+        instanceDefinitions: Record<string, string> | null,
+        trackingState: TrackingState
     ): void {
         // Remove comments and strings from line before validation to avoid false positives
         const lineWithoutCommentsAndStrings = removeCommentsAndStringsFromLine(line);
@@ -147,6 +154,9 @@ class DocumentValidator {
         if (instanceDefinitions) {
             this.diagnostics.push(...validateNullAssignments(lineWithoutCommentsAndStrings, lineIndex, functionsData, classesData, instanceDefinitions));
         }
+        
+        // Validate context-specific restrictions (callbacks, model types)
+        this.diagnostics.push(...validateContextRestrictions(lineWithoutCommentsAndStrings, lineIndex, trackingState));
     }
 
     private validateUnclosedBraces(): void {

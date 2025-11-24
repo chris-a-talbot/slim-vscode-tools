@@ -5,11 +5,11 @@
 // ============================================================================
 
 import { DiagnosticSeverity, Diagnostic } from 'vscode-languageserver';
-import { INDICES, PARAMETER_INDEX_OFFSET, CHAR_OFFSETS, DEFAULT_POSITIONS } from '../config/constants';
-import { RESERVED_IDENTIFIERS } from '../config/constants';
-import { DEFINITION_PATTERNS } from '../config/regex-patterns';
-import { ERROR_MESSAGES, TYPE_NAMES_FOR_ERRORS as TYPE_NAMES, RESERVED_IDENTIFIER_CONTEXTS } from '../config/constants';
-import { createDiagnostic } from '../utils/diagnostic-factory';
+import { INDICES, PARAMETER_INDEX_OFFSET, CHAR_OFFSETS, DEFAULT_POSITIONS } from '../config/config';
+import { RESERVED_IDENTIFIERS } from '../config/config';
+import { DEFINITION_PATTERNS } from '../config/config';
+import { ERROR_MESSAGES, TYPE_NAMES_FOR_ERRORS as TYPE_NAMES, RESERVED_IDENTIFIER_CONTEXTS } from '../config/config';
+import { createDiagnostic } from '../utils/diagnostics';
 
 /**
  * Helper function to check for duplicate definitions and create diagnostics.

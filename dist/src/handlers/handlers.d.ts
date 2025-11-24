@@ -1,4 +1,4 @@
-import { LanguageServerContext } from '../types';
+import { LanguageServerContext } from '../config/types';
 /**
  * Registers all language server handlers and providers.
  * @param context - The language server context containing all necessary data

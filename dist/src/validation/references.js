@@ -6,10 +6,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateUndefinedReferences = validateUndefinedReferences;
 const vscode_languageserver_1 = require("vscode-languageserver");
-const diagnostic_factory_1 = require("../utils/diagnostic-factory");
-const constants_1 = require("../config/constants");
-const regex_patterns_1 = require("../config/regex-patterns");
-const constants_2 = require("../config/constants");
+const diagnostics_1 = require("../utils/diagnostics");
+const config_1 = require("../config/config");
+const config_2 = require("../config/config");
+const config_3 = require("../config/config");
 /**
  * Validates undefined references to SLiM types (mutation types, genomic element types, subpopulations).
  * @param text - The full source text
@@ -51,7 +51,7 @@ function validateUndefinedReferences(_text, lines) {
                             continue;
                         }
                         if (match.index !== undefined) {
-                            diagnostics.push((0, diagnostic_factory_1.createDiagnostic)(vscode_languageserver_1.DiagnosticSeverity.Warning, lineIndex, match.index, match.index + typeId.length, constants_2.ERROR_MESSAGES.UNDEFINED_REFERENCE(typeName, typeId)));
+                            diagnostics.push((0, diagnostics_1.createDiagnostic)(vscode_languageserver_1.DiagnosticSeverity.Warning, lineIndex, match.index, match.index + typeId.length, config_3.ERROR_MESSAGES.UNDEFINED_REFERENCE(typeName, typeId)));
                         }
                     }
                 }
@@ -61,32 +61,32 @@ function validateUndefinedReferences(_text, lines) {
     // Check mutation types (m1, m2, etc.)
     // Detect if mutation types are created dynamically (not with string literals)
     // This happens when IDs are computed at runtime, so we can't validate them statically
-    const hasDynamicMutTypeCreation = regex_patterns_1.VALIDATION_PATTERNS.DYNAMIC_MUT_TYPE.test(fullText) ||
-        regex_patterns_1.VALIDATION_PATTERNS.DYNAMIC_MUT_TYPE_CONCAT.test(fullText);
+    const hasDynamicMutTypeCreation = config_2.VALIDATION_PATTERNS.DYNAMIC_MUT_TYPE.test(fullText) ||
+        config_2.VALIDATION_PATTERNS.DYNAMIC_MUT_TYPE_CONCAT.test(fullText);
     // Match mutation type IDs: m1, m2, m10, etc.
     // \b ensures we match whole words (not "m1" inside "m10")
-    checkUndefinedReferences(regex_patterns_1.VALIDATION_PATTERNS.MUTATION_TYPE_REF, 'initializeMutationType(?:Nuc)?', hasDynamicMutTypeCreation, constants_1.TYPE_NAMES_FOR_ERRORS.MUTATION_TYPE);
+    checkUndefinedReferences(config_2.VALIDATION_PATTERNS.MUTATION_TYPE_REF, 'initializeMutationType(?:Nuc)?', hasDynamicMutTypeCreation, config_1.TYPE_NAMES_FOR_ERRORS.MUTATION_TYPE);
     // Check genomic element types (g1, g2, etc.)
-    const hasDynamicGenElemTypeCreation = regex_patterns_1.VALIDATION_PATTERNS.DYNAMIC_GEN_ELEM_TYPE.test(fullText) ||
-        regex_patterns_1.VALIDATION_PATTERNS.DYNAMIC_GEN_ELEM_TYPE_CONCAT.test(fullText);
-    checkUndefinedReferences(regex_patterns_1.VALIDATION_PATTERNS.GENOMIC_ELEMENT_TYPE_REF, 'initializeGenomicElementType', hasDynamicGenElemTypeCreation, constants_2.TYPE_NAMES_FOR_ERRORS.GENOMIC_ELEMENT_TYPE);
+    const hasDynamicGenElemTypeCreation = config_2.VALIDATION_PATTERNS.DYNAMIC_GEN_ELEM_TYPE.test(fullText) ||
+        config_2.VALIDATION_PATTERNS.DYNAMIC_GEN_ELEM_TYPE_CONCAT.test(fullText);
+    checkUndefinedReferences(config_2.VALIDATION_PATTERNS.GENOMIC_ELEMENT_TYPE_REF, 'initializeGenomicElementType', hasDynamicGenElemTypeCreation, config_3.TYPE_NAMES_FOR_ERRORS.GENOMIC_ELEMENT_TYPE);
     // Check subpopulations (p1, p2, etc.) with context validation
     // Skip subpopulation validation if readFromPopulationFile() is detected
     // (populations are assumed to be loaded from file in that case)
     const hasReadFromPopulationFile = /readFromPopulationFile\s*\(/.test(fullText);
-    const hasDynamicSubpopCreation = regex_patterns_1.VALIDATION_PATTERNS.DYNAMIC_SUBPOP.test(fullText);
+    const hasDynamicSubpopCreation = config_2.VALIDATION_PATTERNS.DYNAMIC_SUBPOP.test(fullText);
     if (!hasReadFromPopulationFile) {
-        checkUndefinedReferences(regex_patterns_1.VALIDATION_PATTERNS.SUBPOPULATION_REF, // Match subpopulation IDs: p1, p2, etc.
+        checkUndefinedReferences(config_2.VALIDATION_PATTERNS.SUBPOPULATION_REF, // Match subpopulation IDs: p1, p2, etc.
         '(sim\\.)?addSubpop(?:Split)?', // Match both sim.addSubpop and addSubpop
-        hasDynamicSubpopCreation, constants_2.TYPE_NAMES_FOR_ERRORS.SUBPOPULATION, (line, match) => {
+        hasDynamicSubpopCreation, config_3.TYPE_NAMES_FOR_ERRORS.SUBPOPULATION, (line, match) => {
             // Only warn if it looks like it's being used as a subpopulation
             // Check surrounding context to avoid false positives (e.g., "p1" in "temp1")
             // We want to match "p1" when it's a standalone identifier, not part of a word
             if (match.index === undefined)
                 return false;
-            const context = line.substring(Math.max(0, match.index - constants_1.LOOKAHEAD_LIMITS.CONTEXT_WINDOW), match.index + match[constants_1.INDICES.SECOND].length + constants_1.LOOKAHEAD_LIMITS.CONTEXT_WINDOW);
+            const context = line.substring(Math.max(0, match.index - config_1.LOOKAHEAD_LIMITS.CONTEXT_WINDOW), match.index + match[config_1.INDICES.SECOND].length + config_1.LOOKAHEAD_LIMITS.CONTEXT_WINDOW);
             // Ensure p1 is surrounded by non-word characters (not part of another identifier)
-            return regex_patterns_1.TYPE_PATTERNS.TYPE_ID_IN_CONTEXT.test(context);
+            return config_2.TYPE_PATTERNS.TYPE_ID_IN_CONTEXT.test(context);
         });
     }
     return diagnostics;

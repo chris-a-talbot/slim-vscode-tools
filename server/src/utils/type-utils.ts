@@ -1,5 +1,5 @@
-import { TEXT_PROCESSING_PATTERNS } from '../config/regex-patterns';
-import { ParameterInfo } from '../types';
+import { TEXT_PROCESSING_PATTERNS } from '../config/config';
+import { ParameterInfo } from '../config/types';
 
 export type { ParameterInfo };
 

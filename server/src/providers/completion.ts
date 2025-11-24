@@ -1,5 +1,5 @@
 import { CompletionParams, CompletionItem, CompletionList } from 'vscode-languageserver';
-import { LanguageServerContext } from '../types';
+import { LanguageServerContext } from '../config/types';
 
 export function registerCompletionProvider(context: LanguageServerContext): void {
     const { connection, documents, completionService } = context;

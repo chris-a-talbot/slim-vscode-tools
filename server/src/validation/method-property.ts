@@ -1,31 +1,16 @@
 // ============================================================================
 // METHOD AND PROPERTY CALL VALIDATION
-// This file contains the code to validate method and property calls.
-// This includes checking that methods and properties exist on classes.
+// Validates that method and property calls reference documented class members
 // ============================================================================
 
 import { DiagnosticSeverity, Diagnostic } from 'vscode-languageserver';
 import { resolveClassName } from '../utils/type-resolving';
-import { CHAR_OFFSETS, INDICES, ERROR_MESSAGES } from '../config/constants';
-import { IDENTIFIER_PATTERNS, TEXT_PROCESSING_PATTERNS } from '../config/regex-patterns';
-import { ClassInfo } from '../types';
-import { validateMultiplePatterns, createStandardDiagnostic } from './validation-framework';
-
-/**
- * Validation context for method/property calls
- */
-interface MethodPropertyContext {
-    instanceDefinitions: Record<string, string>;
-    classesData: Record<string, ClassInfo>;
-}
+import { IDENTIFIER_PATTERNS, TEXT_PROCESSING_PATTERNS, ERROR_MESSAGES } from '../config/config';
+import { ClassInfo } from '../config/types';
+import { createDiagnostic } from '../utils/diagnostics';
 
 /**
  * Validates method and property calls on class instances.
- * @param line - The line of code to validate
- * @param lineIndex - The line index (0-based)
- * @param instanceDefinitions - Map of tracked instance definitions
- * @param classesData - Map of class documentation
- * @returns Array of diagnostic objects
  */
 export function validateMethodOrPropertyCall(
     line: string,
@@ -33,123 +18,99 @@ export function validateMethodOrPropertyCall(
     instanceDefinitions: Record<string, string>,
     classesData: Record<string, ClassInfo>
 ): Diagnostic[] {
-    const validationContext: MethodPropertyContext = {
-        instanceDefinitions,
-        classesData
-    };
+    const diagnostics: Diagnostic[] = [];
     
-    return validateMultiplePatterns(line, lineIndex, [
-        // Method call validation
-        {
-            pattern: IDENTIFIER_PATTERNS.METHOD_CALL,
-            extractIdentifier: (match) => match[INDICES.THIRD], // method name
-            shouldSkip: (ctx) => {
-                // Skip method calls when validating properties
-                if (TEXT_PROCESSING_PATTERNS.OPEN_PAREN_AFTER_WS.test(ctx.afterMatch)) {
-                    return true;
-                }
-                
-                // Skip partial identifiers
-                if (ctx.afterMatch.length > 0 && TEXT_PROCESSING_PATTERNS.WORD_CHAR.test(ctx.afterMatch)) {
-                    return true;
-                }
-                
-                return false;
-            },
-            shouldValidate: (methodName, ctx, vCtx) => {
-                const instanceName = ctx.match[INDICES.SECOND];
-                const className = resolveClassName(instanceName, vCtx.instanceDefinitions);
-                
-                if (!className || !vCtx.classesData[className]) {
-                    return false; // Unknown class, skip validation
-                }
-                
-                const classInfo = vCtx.classesData[className];
-                // Check if method exists on the class
-                if (classInfo.methods?.[methodName]) {
-                    return false; // Method exists, skip validation
-                }
-                
-                // Check if method exists on Object base class (all objects inherit from Object)
-                const objectClass = vCtx.classesData['Object'];
-                if (objectClass && objectClass.methods?.[methodName]) {
-                    return false; // Method exists on Object, skip validation
-                }
-                
-                return true; // Method doesn't exist, validate
-            },
-            createDiagnostic: (methodName, ctx, vCtx) => {
-                const instanceName = ctx.match[INDICES.SECOND];
-                const className = resolveClassName(instanceName, vCtx.instanceDefinitions);
-                
-                if (!className) return null;
-                
-                const startPos = ctx.matchStart + ctx.match[INDICES.SECOND].length + CHAR_OFFSETS.AFTER_DOT;
-                return createStandardDiagnostic(
-                    DiagnosticSeverity.Error,
-                    methodName,
-                    { ...ctx, matchStart: startPos },
-                    ERROR_MESSAGES.METHOD_NOT_EXISTS(methodName, className),
-                    0
-                );
-            }
-        },
+    // Validate method calls
+    const methodPattern = IDENTIFIER_PATTERNS.METHOD_CALL;
+    methodPattern.lastIndex = 0;
+    let match: RegExpExecArray | null;
+    
+    while ((match = methodPattern.exec(line)) !== null) {
+        if (match.index === undefined) continue;
         
-        // Property access validation
-        {
-            pattern: IDENTIFIER_PATTERNS.PROPERTY_ACCESS,
-            extractIdentifier: (match) => match[INDICES.THIRD], // property name
-            shouldSkip: (ctx) => {
-                // Skip partial identifiers
-                if (ctx.afterMatch.length > 0 && TEXT_PROCESSING_PATTERNS.WORD_CHAR.test(ctx.afterMatch)) {
-                    return true;
-                }
-                
-                // For properties, ensure valid terminator
-                if (ctx.afterMatch.length > 0 && !TEXT_PROCESSING_PATTERNS.VALID_TERMINATOR.test(ctx.afterMatch)) {
-                    return true;
-                }
-                
-                return false;
-            },
-            shouldValidate: (propertyName, ctx, vCtx) => {
-                const instanceName = ctx.match[INDICES.SECOND];
-                const className = resolveClassName(instanceName, vCtx.instanceDefinitions);
-                
-                if (!className || !vCtx.classesData[className]) {
-                    return false; // Unknown class, skip validation
-                }
-                
-                const classInfo = vCtx.classesData[className];
-                // Check if property exists on the class
-                if (classInfo.properties?.[propertyName]) {
-                    return false; // Property exists, skip validation
-                }
-                
-                // Check if property exists on Object base class (all objects inherit from Object)
-                const objectClass = vCtx.classesData['Object'];
-                if (objectClass && objectClass.properties?.[propertyName]) {
-                    return false; // Property exists on Object, skip validation
-                }
-                
-                return true; // Property doesn't exist, validate
-            },
-            createDiagnostic: (propertyName, ctx, vCtx) => {
-                const instanceName = ctx.match[INDICES.SECOND];
-                const className = resolveClassName(instanceName, vCtx.instanceDefinitions);
-                
-                if (!className) return null;
-                
-                const startPos = ctx.matchStart + ctx.match[INDICES.SECOND].length + CHAR_OFFSETS.AFTER_DOT;
-                return createStandardDiagnostic(
-                    DiagnosticSeverity.Error,
-                    propertyName,
-                    { ...ctx, matchStart: startPos },
-                    ERROR_MESSAGES.PROPERTY_NOT_EXISTS(propertyName, className),
-                    0
-                );
-            }
+        const instanceName = match[1];
+        const methodName = match[2];
+        const className = resolveClassName(instanceName, instanceDefinitions);
+        
+        if (!className || !classesData[className]) {
+            continue;
         }
-    ], validationContext);
+        
+        const classInfo = classesData[className];
+        
+        // Check if method exists on the class
+        if (classInfo.methods?.[methodName]) {
+            continue;
+        }
+        
+        // Check if method exists on Object base class
+        const objectClass = classesData['Object'];
+        if (objectClass?.methods?.[methodName]) {
+            continue;
+        }
+        
+        // Create diagnostic for unknown method
+        const startPos = match.index + instanceName.length + 1; // +1 for dot
+        diagnostics.push(createDiagnostic(
+            DiagnosticSeverity.Error,
+            lineIndex,
+            startPos,
+            startPos + methodName.length,
+            ERROR_MESSAGES.METHOD_NOT_EXISTS(methodName, className)
+        ));
+    }
+    
+    // Validate property access
+    const propertyPattern = IDENTIFIER_PATTERNS.PROPERTY_ACCESS;
+    propertyPattern.lastIndex = 0;
+    
+    while ((match = propertyPattern.exec(line)) !== null) {
+        if (match.index === undefined) continue;
+        
+        const instanceName = match[1];
+        const propertyName = match[2];
+        const afterMatch = line.substring(match.index + match[0].length);
+        
+        // Skip partial identifiers (user still typing)
+        if (afterMatch.length > 0 && TEXT_PROCESSING_PATTERNS.WORD_CHAR.test(afterMatch)) {
+            continue;
+        }
+        
+        // For properties, ensure valid terminator
+        if (afterMatch.length > 0 && !TEXT_PROCESSING_PATTERNS.VALID_TERMINATOR.test(afterMatch)) {
+            continue;
+        }
+        
+        const className = resolveClassName(instanceName, instanceDefinitions);
+        
+        if (!className || !classesData[className]) {
+            continue;
+        }
+        
+        const classInfo = classesData[className];
+        
+        // Check if property exists on the class
+        if (classInfo.properties?.[propertyName]) {
+            continue;
+        }
+        
+        // Check if property exists on Object base class
+        const objectClass = classesData['Object'];
+        if (objectClass?.properties?.[propertyName]) {
+            continue;
+        }
+        
+        // Create diagnostic for unknown property
+        const startPos = match.index + instanceName.length + 1; // +1 for dot
+        diagnostics.push(createDiagnostic(
+            DiagnosticSeverity.Error,
+            lineIndex,
+            startPos,
+            startPos + propertyName.length,
+            ERROR_MESSAGES.PROPERTY_NOT_EXISTS(propertyName, className)
+        ));
+    }
+    
+    return diagnostics;
 }
 

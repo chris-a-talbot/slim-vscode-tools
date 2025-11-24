@@ -10,8 +10,8 @@ import {
     Location,
     Range
 } from 'vscode-languageserver';
-import { LanguageServerContext } from '../types';
-import { DEFINITION_PATTERNS, CALLBACK_REGISTRATION_PATTERNS } from '../config/regex-patterns';
+import { LanguageServerContext } from '../config/types';
+import { DEFINITION_PATTERNS, CALLBACK_REGISTRATION_PATTERNS } from '../config/config';
 
 /**
  * Registers the workspace symbols provider

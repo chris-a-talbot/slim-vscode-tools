@@ -3,7 +3,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { TextDocuments } from 'vscode-languageserver/node';
 import { registerHandlers } from './src/handlers/handlers';
 import { initializeLogger, log, logErrorWithStack } from './src/utils/logger';
-import { DocumentationService } from './src/services/documentation-service';
+import { DocumentationService } from './src/utils/documentation-service';
 import { ValidationService } from './src/services/validation-service';
 import { CompletionService } from './src/services/completion-service';
 
