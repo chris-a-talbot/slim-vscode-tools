@@ -5,6 +5,7 @@ import { registerHandlers } from './src/handlers/handlers';
 import { initializeLogger, log, logErrorWithStack } from './src/utils/logger';
 import { DocumentationService } from './src/services/documentation-service';
 import { CompletionService } from './src/services/completion-service';
+import { ValidationService } from './src/services/validation-service';
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
@@ -22,6 +23,7 @@ process.on('unhandledRejection', (reason) => {
 // Initialize services
 const documentationService = new DocumentationService();
 const completionService = new CompletionService(documentationService);
+const validationService = new ValidationService(documentationService);
 
 documents.listen(connection);
 
@@ -30,6 +32,7 @@ registerHandlers({
     documents,
     documentationService,
     completionService,
+    validationService,
 });
 
 connection.onInitialized(() => {

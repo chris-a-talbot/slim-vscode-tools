@@ -1,58 +1,51 @@
-import {
-    InitializeParams,
-    InitializeResult,
-    ServerCapabilities,
-    TextDocumentSyncKind,
-} from 'vscode-languageserver';
-import { registerHoverProvider } from '../providers/hover';
-import { LanguageServerContext } from '../config/types';
-import { registerCompletionProvider } from '../providers/completion';
+import { InitializeParams, InitializeResult, ServerCapabilities, TextDocumentSyncKind, TextDocumentChangeEvent } from 'vscode-languageserver';
+import { sendDiagnostics } from '../utils/diagnostics';
 import { registerDocumentSymbolsProvider } from '../providers/document-symbols';
+import { registerHoverProvider } from '../providers/hover';
+import { registerCompletionProvider } from '../providers/completion';
 import { registerDefinitionProvider } from '../providers/definition';
 import { registerReferencesProvider } from '../providers/references';
+import { LanguageServerContext } from '../config/types';
+import { logErrorWithStack } from '../utils/logger';
 
 export function registerHandlers(context: LanguageServerContext): void {
-    const { connection } = context;
-
+    const { connection, documents, validationService } = context;
+    
     // Register initialize handler
     connection.onInitialize((_params: InitializeParams): InitializeResult => {
         const result: InitializeResult = {
             capabilities: {
                 textDocumentSync: TextDocumentSyncKind.Incremental,
-                hoverProvider: true,
                 completionProvider: {
                     resolveProvider: true,
-                    triggerCharacters: ['.'],
+                    triggerCharacters: ['.'] // Add dot as a trigger character
                 },
+                hoverProvider: true,
+                referencesProvider: true,
                 documentSymbolProvider: true,
                 definitionProvider: true,
-                referencesProvider: true,
-                // TODO: Implement additional providers
-                // signatureHelpProvider: {
-                //     triggerCharacters: ['(', ',', ' '],
-                //     retriggerCharacters: [',', ')'],
-                // },
-                // codeActionProvider: {
-                //     codeActionKinds: ['quickfix', 'refactor'],
-                // },
-                // inlayHintProvider: true,
-                // renameProvider: {
-                //     prepareProvider: true,
-                // },
-                // workspaceSymbolProvider: true,
-                // codeLensProvider: {
-                //     resolveProvider: false,
-                // },
-                // documentHighlightProvider: true,
-            } as ServerCapabilities,
+            } as ServerCapabilities
         };
         return result;
     });
 
+    // Note: onInitialized handler is set up in index.ts to initialize logger
+
+    // Register document change handler (for validation)
+    documents.onDidChangeContent((change: TextDocumentChangeEvent<any>) => {
+        validationService.validate(change.document).then((diagnostics) => {
+            sendDiagnostics(connection, change.document.uri, diagnostics);
+        }).catch((error: unknown) => {
+            logErrorWithStack(error, 'Error during validation');
+            // Send empty diagnostics on error to clear previous errors
+            sendDiagnostics(connection, change.document.uri, []);
+        });
+    });
+
     // Register all providers
+    registerDocumentSymbolsProvider(context);
     registerHoverProvider(context);
     registerCompletionProvider(context);
-    registerDocumentSymbolsProvider(context);
     registerDefinitionProvider(context);
     registerReferencesProvider(context);
 }

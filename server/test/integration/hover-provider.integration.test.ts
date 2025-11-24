@@ -4,6 +4,7 @@ import { registerHoverProvider } from '../../src/providers/hover';
 import type { LanguageServerContext } from '../../src/config/types';
 import type { DocumentationService } from '../../src/services/documentation-service';
 import type { CompletionService } from '../../src/services/completion-service';
+import type { ValidationService } from '../../src/services/validation-service';
 
 class MockDocumentationService implements Partial<DocumentationService> {
   getFunctions() { return {}; }
@@ -26,6 +27,10 @@ class MockCompletionService implements Partial<CompletionService> {
   resolveCompletion() { return {} as any; }
 }
 
+class MockValidationService implements Partial<ValidationService> {
+  validate() { return Promise.resolve([]); }
+}
+
 function createHoverTestContext(source: string): { getHover: () => (params: any) => Hover | null | Promise<Hover | null> } {
   const document = {
     getText: () => source,
@@ -44,12 +49,14 @@ function createHoverTestContext(source: string): { getHover: () => (params: any)
 
   const documentationService = new MockDocumentationService() as DocumentationService;
   const completionService = new MockCompletionService() as unknown as CompletionService;
+  const validationService = new MockValidationService() as unknown as ValidationService;
 
   const ctx: LanguageServerContext = {
     connection,
     documents,
     documentationService,
     completionService,
+    validationService,
   };
 
   registerHoverProvider(ctx);

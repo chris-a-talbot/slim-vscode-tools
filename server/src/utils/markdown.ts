@@ -34,7 +34,7 @@ export function createMethodMarkdown(
     methodName: string,
     methodInfo: MethodInfo
 ): string {
-    return `**${className}.${methodName}** (method)\n\`\`\`slim\n${cleanSignature(methodInfo.signature)}\n\`\`\`\n\n${cleanDocumentationText(methodInfo.description)}`;
+    return `**${className}.${methodName}** (method)\n\n\`\`\`slim\n${cleanSignature(methodInfo.signature)}\n\`\`\`\n\n${cleanDocumentationText(methodInfo.description)}`;
 }
 
 export function createPropertyMarkdown(
@@ -42,7 +42,7 @@ export function createPropertyMarkdown(
     propertyName: string,
     propertyInfo: PropertyInfo
 ): string {
-    return `**${className}.${propertyName}** (property)\nType: ${cleanTypeNames(propertyInfo.type)}\n\n${cleanDocumentationText(propertyInfo.description)}`;
+    return `**${className}.${propertyName}** (property)\n\n**Type:** \`${cleanTypeNames(propertyInfo.type)}\`\n\n${cleanDocumentationText(propertyInfo.description)}`;
 }
 
 export function createFunctionMarkdown(
@@ -51,7 +51,7 @@ export function createFunctionMarkdown(
     source?: 'SLiM' | 'Eidos'
 ): string {
     const sourceLabel = source || functionInfo.source || 'function';
-    return `**${functionName}** (${sourceLabel} function)\n\n**Return Type:** \`${cleanTypeNames(functionInfo.returnType || 'void')}\`\n\`\`\`slim\n${cleanSignature(functionInfo.signature || '')}\n\`\`\`\n\n${cleanDocumentationText(functionInfo.description)}`;
+    return `**${functionName}** (${sourceLabel} function)\n\n**Return Type:** \`${cleanTypeNames(functionInfo.returnType || 'void')}\`\n\n\`\`\`slim\n${cleanSignature(functionInfo.signature || '')}\n\`\`\`\n\n${cleanDocumentationText(functionInfo.description)}`;
 }
 
 export function createCallbackMarkdown(callbackName: string, callbackInfo: CallbackInfo): string {
@@ -60,7 +60,7 @@ export function createCallbackMarkdown(callbackName: string, callbackInfo: Callb
     const tickCycleSection = createTickCycleSection(
         normalizeTickCycleKey(cleanedSignature, callbackName)
     );
-    return `**${callbackName}** (callback)\n\n\`\`\`slim\n${cleanedSignature}\n\`\`\`${tickCycleSection}\n${cleanDocumentationText(callbackInfo.description)}`;
+    return `**${callbackName}** (callback)\n\n\`\`\`slim\n${cleanedSignature}\n\`\`\`${tickCycleSection}\n\n${cleanDocumentationText(callbackInfo.description)}`;
 }
 
 export function createTypeMarkdown(typeName: string, typeInfo: TypeInfo): string {
@@ -93,7 +93,7 @@ export function createEidosEventMarkdown(eventName: string, eventInfo: CallbackI
     const tickCycleSection = tickCycleInfo
         ? `\n\n**Tick Cycle:**\n- **WF model:** ${tickCycleInfo.wf}\n- **nonWF model:** ${tickCycleInfo.nonwf}\n`
         : '';
-    return `**${fullEventName}** (Eidos event)\n\n\`\`\`slim\n${fullEventName}\n\`\`\`${tickCycleSection}\n${cleanDocumentationText(eventInfo.description)}`;
+    return `**${fullEventName}** (Eidos event)\n\n\`\`\`slim\n${fullEventName}\n\`\`\`${tickCycleSection}\n\n${cleanDocumentationText(eventInfo.description)}`;
 }
 
 /**

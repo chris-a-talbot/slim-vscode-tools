@@ -85,3 +85,13 @@ Initial release of `slim-tools` with the following features:
 - - Provider and implementation is stored in `document-symbols.ts`
 - Add go-to-definitions and find-references services
 - - Provider and implementation stored in `definition.ts` and `references.ts` respectively
+
+## [0.0.12] (CAT)
+- Added basic validation service for checking scripts for errors
+- - `validation-service.ts` implements all validators and runs a check when documents change
+- - `definitions.ts` checks for duplicate definitions or reserved identifiers used in definitions
+- - `function-calls.ts` checks for calls to unknown/undefined functions
+- - `method-property.ts` checks for invalid methods or properties access on objects
+- - `references.ts` ensures that references to objects are defined before use
+- - `structure.ts` ensures that the overall structure of the simulation is valid
+- Improved markdown formatting for hover info

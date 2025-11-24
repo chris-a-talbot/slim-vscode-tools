@@ -183,6 +183,7 @@ export const DEFINITION_PATTERNS = {
     INSTANCE: /(\w+)\s*=\s*new\s+(\w+)/,
     ASSIGNMENT: /(\w+)\s*=\s*([^;]+)/,
     CONSTANT_VALUE: /defineConstant\s*\(\s*"[^"]+"\s*,\s*(.+?)(?:\)|$)/,
+    USER_FUNCTION: /function\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/,
 } as const;
 
 // Event and callback patterns
