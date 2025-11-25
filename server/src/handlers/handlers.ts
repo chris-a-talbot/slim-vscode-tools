@@ -4,7 +4,7 @@ import { registerHoverProvider } from '../providers/hover';
 import { registerCompletionProvider, registerCompletionResolveProvider } from '../providers/completion';
 import { registerSignatureHelpProvider } from '../providers/signature-help';
 import { registerReferencesProvider } from '../providers/references';
-import { registerDocumentSymbolProvider } from '../providers/document-symbol';
+import { registerDocumentSymbolsProvider } from '../providers/document-symbols';
 import { LanguageServerContext } from '../config/types';
 
 export function getInitializeResult(): InitializeResult {
@@ -52,6 +52,6 @@ export function registerHandlers(
     connection.onReferences(registerReferencesProvider());
 
     // Register document symbol provider
-    connection.onDocumentSymbol(registerDocumentSymbolProvider(documents));
+    connection.onDocumentSymbol(registerDocumentSymbolsProvider(documents));
 }
 

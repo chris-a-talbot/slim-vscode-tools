@@ -1,4 +1,4 @@
-import { DocumentSymbolParams } from 'vscode-languageserver/node';
+import { DocumentSymbolParams, TextDocuments } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 
 export function onDocumentSymbol(params: DocumentSymbolParams, document: TextDocument): any[] {
@@ -24,5 +24,13 @@ export function onDocumentSymbol(params: DocumentSymbolParams, document: TextDoc
     });
 
     return symbols;
+}
+
+export function registerDocumentSymbolsProvider(documents: TextDocuments<TextDocument>) {
+    return (params: DocumentSymbolParams) => {
+        const document = documents.get(params.textDocument.uri);
+        if (!document) return [];
+        return onDocumentSymbol(params, document);
+    };
 }
 
