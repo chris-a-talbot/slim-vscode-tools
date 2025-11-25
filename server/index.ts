@@ -1,30 +1,44 @@
-import {
-    createConnection,
-    TextDocuments,
-    ProposedFeatures,
-} from 'vscode-languageserver/node';
+// Main entry point for the SLiM Language Server
+import { createConnection, TextDocuments, ProposedFeatures } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { loadDocumentation } from './src/services/documentation-service';
-import { setupHandlers } from './src/handlers/handlers';
+import { DocumentationService } from './src/services/documentation-service';
+import { ValidationService } from './src/services/validation-service';
+import { getInitializeResult, registerHandlers } from './src/handlers/handlers';
+import { initializeLogger, log, logErrorWithStack } from './src/utils/logger';
 
-// Create connection and document manager
+// Create the connection and text document manager
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);
 
-// Load documentation data
-loadDocumentation();
+log('Starting...');
 
-// Listen for document changes
+process.on('uncaughtException', (error) => {
+    logErrorWithStack(error, 'Uncaught exception');
+});
+
+process.on('unhandledRejection', (reason) => {
+    logErrorWithStack(reason, 'Unhandled rejection');
+});
+
+// Load all documentation on startup
+const documentationService = new DocumentationService();
+const validationService = new ValidationService(documentationService);
+
+// Listen to document changes
 documents.listen(connection);
 
 // Handle initialization
 connection.onInitialize(() => {
-    return setupHandlers(connection, documents);
+    return getInitializeResult();
 });
+
+// Register all handlers
+registerHandlers({ connection, documents, documentationService, validationService });
 
 connection.onInitialized(() => {
-    connection.console.log('SLiM Language Server initialized');
+    initializeLogger(connection);
+    log('SLiM Language Server initialized');
 });
 
-// Start listening
+// Start listening for messages
 connection.listen();

@@ -193,6 +193,19 @@ Initial release of `slim-tools` with the following features:
 - - `server/src/validation` for scripts used by the validation service to check for errors
 - - - `structure.ts` for validating the structure of the script (e.g. semicolon-related errors)
 
+## [0.0.10]
+- Enhancements:
+- - `server/src/utils/hover-resolvers.ts` for enhanced hover info displays and detection; cleans signatures and type names, adds tick cycle info to callbacks, handles LogFiles, detects Eidos events and callbacks, implements various helpers
+- - `server/src/utils/markdown.ts` for generating markdown for hover info
+- - `server/src/utils/text-processing.ts` for cleaning up text before generating markdown (uses `he` for HTML decoding)
+- - `server/src/utils/type-manager.ts` for resolving class names and inferring types from patterns
+- - `server/src/utils/logger.ts` for logging with awareness of current connection state
+- - `server/src/utils/instance.ts` expanded with more comprehensive instance tracking for definitions, events, objects, etc.
+- - `server/src/services/documentation-service.ts` turned into a service and expanded for future development
+- - `server/src/services/validation-service.ts` turned into a service, added additional basic checks
+- - Expand upon the instance to class names mapping
+- - Add Eidos operators to the language server's context for hover info, completions, validation, etc.
+
 ## Development notes
 
 1. First install the dependencies with `npm install`

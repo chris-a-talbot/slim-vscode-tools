@@ -1,23 +1,14 @@
-import {
-    Connection,
-    TextDocuments,
-    InitializeResult,
-    TextDocumentSyncKind,
-} from 'vscode-languageserver/node';
-import { TextDocument } from 'vscode-languageserver-textdocument';
-import { validateTextDocument } from '../services/validation-service';
-import { onHover } from '../providers/hover';
-import { onCompletion, onCompletionResolve } from '../providers/completion';
-import { onSignatureHelp } from '../providers/signature-help';
-import { onReferences } from '../providers/references';
-import { onDocumentSymbol } from '../providers/document-symbols';
+// Handler registration and initialization
+import { InitializeResult, TextDocumentSyncKind } from 'vscode-languageserver/node';
+import { registerHoverProvider } from '../providers/hover';
+import { registerCompletionProvider, registerCompletionResolveProvider } from '../providers/completion';
+import { registerSignatureHelpProvider } from '../providers/signature-help';
+import { registerReferencesProvider } from '../providers/references';
+import { registerDocumentSymbolProvider } from '../providers/document-symbol';
+import { LanguageServerContext } from '../config/types';
 
-export function setupHandlers(
-    connection: Connection,
-    documents: TextDocuments<TextDocument>
-): InitializeResult {
-    // Initialize handler
-    const initializeResult: InitializeResult = {
+export function getInitializeResult(): InitializeResult {
+    return {
         capabilities: {
             textDocumentSync: TextDocumentSyncKind.Full,
             completionProvider: {
@@ -34,50 +25,33 @@ export function setupHandlers(
             },
         },
     };
+}
 
-    // Document change handler
-    documents.onDidChangeContent((change) => {
-        validateTextDocument(change.document, connection);
+export function registerHandlers(
+    context: LanguageServerContext
+): void {
+    const { connection, documents, validationService } = context;
+
+    // Register document change handler
+    documents.onDidChangeContent(async (change) => {
+        const diagnostics = await validationService.validate(change.document);
+        connection.sendDiagnostics({ uri: change.document.uri, diagnostics });
     });
 
-    // Hover handler
-    connection.onHover((params) => {
-        const document = documents.get(params.textDocument.uri);
-        if (!document) return null;
-        return onHover(params, document);
-    });
+    // Register hover provider
+    registerHoverProvider(context);
 
-    // Completion handler
-    connection.onCompletion((params) => {
-        const document = documents.get(params.textDocument.uri);
-        if (!document) return [];
-        return onCompletion(params, document);
-    });
+    // Register completion providers
+    connection.onCompletion(registerCompletionProvider(documents));
+    connection.onCompletionResolve(registerCompletionResolveProvider());
 
-    // Completion resolve handler
-    connection.onCompletionResolve((item) => {
-        return onCompletionResolve(item);
-    });
+    // Register signature help provider
+    connection.onSignatureHelp(registerSignatureHelpProvider(documents));
 
-    // Signature help handler
-    connection.onSignatureHelp((params) => {
-        const document = documents.get(params.textDocument.uri);
-        if (!document) return null;
-        return onSignatureHelp(params, document);
-    });
+    // Register references provider
+    connection.onReferences(registerReferencesProvider());
 
-    // References handler
-    connection.onReferences(() => {
-        return onReferences();
-    });
-
-    // Document symbol handler
-    connection.onDocumentSymbol((params) => {
-        const document = documents.get(params.textDocument.uri);
-        if (!document) return [];
-        return onDocumentSymbol(params, document);
-    });
-
-    return initializeResult;
+    // Register document symbol provider
+    connection.onDocumentSymbol(registerDocumentSymbolProvider(documents));
 }
 

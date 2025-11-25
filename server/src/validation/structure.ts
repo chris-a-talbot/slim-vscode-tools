@@ -1,4 +1,4 @@
-// Validation utilities for checking code structure
+// Structure validation utilities
 
 export function shouldHaveSemicolon(
     line: string,
@@ -42,3 +42,23 @@ export function shouldHaveSemicolon(
     };
 }
 
+// Type inference patterns (for expression type detection)
+export const TYPE_INFERENCE_PATTERNS = {
+    NUMERIC_FUNCTIONS:
+        /^(sum|mean|min|max|abs|sqrt|log|exp|sin|cos|tan|round|floor|ceil|length|size|sd|var)\s*\(/,
+    ARITHMETIC_OPERATORS: /[+\-*\/%]/,
+    LOGICAL_OPERATORS: /^(==|!=|<|>|<=|>=|&&|\|\||!)/,
+    LOGICAL_FUNCTIONS: /^(all|any|isNULL|isNAN|isFinite|isInfinite)\s*\(/,
+    SUBPOPULATION_METHODS:
+        /\.(addSubpop|addSubpopSplit|subpopulations|subpopulationsWithIDs|subpopulationsWithNames|subpopulationByID)\(/,
+    INDIVIDUAL_METHODS: /\.(individuals|sampleIndividuals|individualsWithPedigreeIDs)(\[|$|\()/,
+    HAPLOSOME_METHODS: /\.(genomes|haplosomesForChromosomes|genome1|genome2)(\[|$|\()/,
+    MUTATION_METHODS:
+        /\.(mutations|mutationsOfType|mutationsFromHaplosomes|uniqueMutationsOfType)(\[|$|\()/,
+    MUTATION_TYPE_METHODS:
+        /(initializeMutationType|initializeMutationTypeNuc|\.mutationTypesWithIDs)\(/,
+    GENOMIC_ELEMENT_TYPE_METHODS: /(initializeGenomicElementType|\.genomicElementTypesWithIDs)\(/,
+    INTERACTION_TYPE_METHODS: /(initializeInteractionType|\.interactionTypesWithIDs)\(/,
+    CHROMOSOME_METHODS: /(initializeChromosome|\.chromosomesWithIDs|\.chromosomesOfType)\(/,
+    LOGFILE_METHODS: /\.createLogFile\(/,
+} as const;
