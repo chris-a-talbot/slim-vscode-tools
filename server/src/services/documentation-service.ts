@@ -11,11 +11,11 @@ import {
 } from '../config/paths';
 import {
     TEXT_PROCESSING_PATTERNS,
-    setFunctionsData,
-    setClassesData,
-    setCallbacksData,
-    setTypesData,
-    setOperatorsData,
+    functionsData,
+    classesData,
+    callbacksData,
+    typesData,
+    operatorsData,
 } from '../config/config';
 import {
     FunctionData,
@@ -24,9 +24,11 @@ import {
     TypeInfo,
     OperatorInfo,
     ConstructorInfo,
+    LanguageMode,
 } from '../config/types';
 import { log, logErrorWithStack } from '../utils/logger';
 import { cleanSignature } from '../utils/text-processing';
+import { isSourceAvailableInMode } from '../utils/language-mode';
 
 // Shared helper so both the service and legacy exports can build constructor info consistently
 function buildClassConstructors(
@@ -69,10 +71,10 @@ export class DocumentationService {
                 `Loaded eidos functions: ${Object.keys(this.functionsData).length} total functions`
             );
 
-            this.loadClassData(slimClassesPath, this.classesData);
+            this.loadClassData(slimClassesPath, 'SLiM', this.classesData);
             log(`Loaded slim classes: ${Object.keys(this.classesData).length} classes`);
 
-            this.loadClassData(eidosClassesPath, this.classesData);
+            this.loadClassData(eidosClassesPath, 'Eidos', this.classesData);
             log(`Loaded eidos classes: ${Object.keys(this.classesData).length} total classes`);
 
             this.loadCallbackData(slimCallbacksPath, this.callbacksData);
@@ -90,11 +92,11 @@ export class DocumentationService {
             this.classConstructors = this.extractClassConstructors(this.classesData);
 
             // Keep global stores in sync for existing providers that still rely on them
-            setFunctionsData(this.functionsData);
-            setClassesData(this.classesData);
-            setCallbacksData(this.callbacksData);
-            setTypesData(this.typesData);
-            setOperatorsData(this.operatorsData);
+            Object.assign(functionsData, this.functionsData);
+            Object.assign(classesData, this.classesData);
+            Object.assign(callbacksData, this.callbacksData);
+            Object.assign(typesData, this.typesData);
+            Object.assign(operatorsData, this.operatorsData);
 
             log('Documentation loaded successfully');
         } catch (error) {
@@ -102,16 +104,25 @@ export class DocumentationService {
         }
     }
 
-    public getFunctions(): Record<string, FunctionData> {
-        return this.functionsData;
+    public getFunctions(mode?: LanguageMode): Record<string, FunctionData> {
+        if (!mode) {
+            return this.functionsData;
+        }
+        return this.filterByLanguageMode(this.functionsData, mode);
     }
 
-    public getClasses(): Record<string, ClassInfo> {
-        return this.classesData;
+    public getClasses(mode?: LanguageMode): Record<string, ClassInfo> {
+        if (!mode) {
+            return this.classesData;
+        }
+        return this.filterByLanguageMode(this.classesData, mode);
     }
 
-    public getCallbacks(): Record<string, CallbackInfo> {
-        return this.callbacksData;
+    public getCallbacks(mode?: LanguageMode): Record<string, CallbackInfo> {
+        if (!mode) {
+            return this.callbacksData;
+        }
+        return this.filterByLanguageMode(this.callbacksData, mode);
     }
 
     public getTypes(): Record<string, TypeInfo> {
@@ -122,8 +133,32 @@ export class DocumentationService {
         return this.operatorsData;
     }
 
-    public getClassConstructors(): Record<string, ConstructorInfo> {
-        return this.classConstructors;
+    public getClassConstructors(mode?: LanguageMode): Record<string, ConstructorInfo> {
+        if (!mode) {
+            return this.classConstructors;
+        }
+        // Filter constructors based on their parent class's source
+        const filteredClasses = this.getClasses(mode);
+        const result: Record<string, ConstructorInfo> = {};
+        for (const [className, constructorInfo] of Object.entries(this.classConstructors)) {
+            if (filteredClasses[className]) {
+                result[className] = constructorInfo;
+            }
+        }
+        return result;
+    }
+
+    private filterByLanguageMode<T extends { source?: 'SLiM' | 'Eidos' }>(
+        data: Record<string, T>,
+        mode: LanguageMode
+    ): Record<string, T> {
+        const result: Record<string, T> = {};
+        for (const [key, value] of Object.entries(data)) {
+            if (isSourceAvailableInMode(value.source, mode)) {
+                result[key] = value;
+            }
+        }
+        return result;
     }
 
     private transformFunctionData(
@@ -152,6 +187,7 @@ export class DocumentationService {
         return {
             ...callbackData,
             signature: callbackData.signature.replace(/\s+(callbacks|events)$/, ''),
+            source: 'SLiM', // All callbacks are SLiM-specific
         };
     }
 
@@ -197,10 +233,17 @@ export class DocumentationService {
         }
     }
 
-    private loadClassData(filePath: string, target: Record<string, ClassInfo>): void {
+    private loadClassData(
+        filePath: string,
+        source: 'SLiM' | 'Eidos',
+        target: Record<string, ClassInfo>
+    ): void {
         const data = this.loadJsonFile<Record<string, ClassInfo>>(filePath);
         if (data) {
-            Object.assign(target, data);
+            // Add source to each class
+            for (const [className, classInfo] of Object.entries(data)) {
+                target[className] = { ...classInfo, source };
+            }
         }
     }
 
@@ -245,9 +288,6 @@ export class DocumentationService {
         return buildClassConstructors(classesData);
     }
 }
-
-// Singleton instance for consumers that want a shared documentation service
-export const documentationService = new DocumentationService();
 
 export function extractClassConstructors(classesData: {
     [key: string]: ClassInfo;

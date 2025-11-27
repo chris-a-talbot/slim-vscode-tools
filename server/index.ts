@@ -3,6 +3,7 @@ import { createConnection, TextDocuments, ProposedFeatures } from 'vscode-langua
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { DocumentationService } from './src/services/documentation-service';
 import { ValidationService } from './src/services/validation-service';
+import { CompletionService } from './src/services/completion-service';
 import { getInitializeResult, registerHandlers } from './src/handlers/handlers';
 import { initializeLogger, log, logErrorWithStack } from './src/utils/logger';
 
@@ -22,7 +23,8 @@ process.on('unhandledRejection', (reason) => {
 
 // Load all documentation on startup
 const documentationService = new DocumentationService();
-const validationService = new ValidationService(documentationService);
+const validationService = new ValidationService();
+const completionService = new CompletionService(documentationService);
 
 // Listen to document changes
 documents.listen(connection);
@@ -33,7 +35,7 @@ connection.onInitialize(() => {
 });
 
 // Register all handlers
-registerHandlers({ connection, documents, documentationService, validationService });
+registerHandlers({ connection, documents, documentationService, validationService, completionService });
 
 connection.onInitialized(() => {
     initializeLogger(connection);

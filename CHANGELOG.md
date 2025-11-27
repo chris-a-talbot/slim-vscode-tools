@@ -4,6 +4,36 @@ All notable changes to the "slim-tools" extension will be documented in this fil
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+
+### Added
+- **Eidos/SLiM File Type Differentiation**: Comprehensive support for differentiating between `.eidos` and `.slim` files
+  - `.eidos` files now only receive Eidos language features (base scripting language)
+  - `.slim` files receive full SLiM + Eidos features (population genetics simulation extensions)
+  - Language mode detection system (`language-mode.ts`) for automatic file type recognition
+  - Separate language configuration for Eidos files (`language-configuration-eidos.json`)
+  - Test file for Eidos functionality (`test_eidos.eidos`)
+
+### Changed
+- **Documentation Service**: Added filtering methods to provide language-mode-specific documentation
+  - `getFunctions(mode?)`, `getClasses(mode?)`, `getCallbacks(mode?)`, `getClassConstructors(mode?)`
+  - All documentation items now tagged with source (`'SLiM'` or `'Eidos'`)
+- **Completion Service**: Completions now filtered based on file type
+  - Eidos files only show Eidos functions, classes, and features
+  - SLiM files show all features (Eidos base + SLiM extensions)
+- **Hover Provider**: Hover documentation now filtered by language mode
+- **Signature Help Provider**: Function signatures filtered by language mode
+- **Validation Service**: Added validation to detect SLiM-specific syntax in Eidos files
+  - Shows error when SLiM callback blocks are used in `.eidos` files
+- **Package Configuration**: Added `.eidos` language registration with proper grammar and snippets support
+
+### Fixed
+- Language server now properly differentiates between Eidos base language and SLiM extensions
+- Prevents confusion from showing SLiM-specific features in pure Eidos scripts
+
+### Documentation
+- Added comprehensive implementation guide: `EIDOS_SLIM_DIFFERENTIATION.md`
+
 ### Initial release
 - simple handling of coloring, sytax checking. 
 - Run SLiM script command
@@ -96,3 +126,5 @@ Initial release of `slim-tools` with the following features:
 - - `server/src/services/validation-service.ts` turned into a service, added additional basic checks
 - - Expand upon the instance to class names mapping
 - - Add Eidos operators to the language server's context for hover info, completions, validation, etc.
+- - Fix issues with handling of Eidos files and differentiate between .eidos and .slim files throughout
+- - General code clean-up/improvements (especially in `config.ts` and `types.ts`)

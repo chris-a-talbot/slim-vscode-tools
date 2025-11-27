@@ -1,8 +1,18 @@
-// Type definitions for the SLiM Language Server
-
-import { Connection, TextDocument, TextDocuments } from "vscode-languageserver";
+import { Connection, TextDocuments } from "vscode-languageserver";
+import { TextDocument } from "vscode-languageserver-textdocument";
 import { DocumentationService } from "../services/documentation-service";
 import { ValidationService } from "../services/validation-service";
+import { CompletionService } from "../services/completion-service";
+
+// ============================================================================
+// Language mode
+// ============================================================================
+
+export type LanguageMode = 'eidos' | 'slim';
+
+// ============================================================================
+// Documentation types
+// ============================================================================
 
 export interface FunctionData {
     signatures: string[];
@@ -22,6 +32,11 @@ export interface PropertyInfo {
     description: string;
 }
 
+export interface ConstructorInfo {
+    signature: string;
+    description: string;
+}
+
 export interface ClassInfo {
     constructor?: {
         signature?: string;
@@ -29,31 +44,16 @@ export interface ClassInfo {
     };
     methods?: { [key: string]: MethodInfo };
     properties?: { [key: string]: PropertyInfo };
+    source?: 'SLiM' | 'Eidos';
 }
 
 export interface CallbackInfo {
     signature: string;
     description: string;
+    source?: 'SLiM' | 'Eidos';
 }
 
 export interface TypeInfo {
-    description: string;
-}
-
-export interface WordContext {
-    isMethodOrProperty: boolean;
-    className?: string;
-    instanceName?: string;
-    instanceClass?: string;
-}
-
-export interface WordInfo {
-    word: string;
-    context: WordContext;
-}
-
-export interface ConstructorInfo {
-    signature: string;
     description: string;
 }
 
@@ -67,7 +67,26 @@ export interface TickCycleInfo {
     nonwf: string;
 }
 
-// Parse state for tracking strings and comments
+// ============================================================================
+// Word and context analysis
+// ============================================================================
+
+export interface WordContext {
+    isMethodOrProperty: boolean;
+    className?: string;
+    instanceName?: string;
+    instanceClass?: string;
+}
+
+export interface WordInfo {
+    word: string;
+    context: WordContext;
+}
+
+// ============================================================================
+// Parsing types
+// ============================================================================
+
 export interface ParseState {
     inString: boolean;
     stringChar: string | null;
@@ -75,14 +94,12 @@ export interface ParseState {
     inMultiLineComment: boolean;
 }
 
-// Options for parsing code
 export interface ParseOptions {
     trackStrings?: boolean;
     trackComments?: boolean;
     trackMultiLineComments?: boolean;
 }
 
-// Parameter information extracted from signatures
 export interface ParameterInfo {
     name: string | null;
     type: string;
@@ -100,7 +117,10 @@ export interface PositionOptions {
     inferTypeFromExpression?: (expr: string) => string | null;
 }
 
-// Tracking state for instance definitions and constants
+// ============================================================================
+// State tracking
+// ============================================================================
+
 export interface TrackingState {
     instanceDefinitions: Record<string, string>;
     definedConstants: Set<string>;
@@ -114,17 +134,20 @@ export interface TrackingState {
     callbackContextByLine: Map<number, string | null>;
 }
 
-// Callback context state
 export interface CallbackState {
     currentCallback: string | null;
     braceDepth: number;
     callbackStartLine: number;
 }
 
-// Language server context
+// ============================================================================
+// Language server
+// ============================================================================
+
 export interface LanguageServerContext {
     connection: Connection;
     documents: TextDocuments<TextDocument>;
     documentationService: DocumentationService;
     validationService: ValidationService;
+    completionService: CompletionService;
 }

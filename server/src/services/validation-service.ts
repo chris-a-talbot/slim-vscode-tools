@@ -1,7 +1,8 @@
 import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { DocumentationService } from '../services/documentation-service';
 import { shouldHaveSemicolon } from '../validation/structure';
+import { getLanguageModeFromDocument } from '../utils/language-mode';
+import { LanguageMode } from '../config/types';
 
 export class ValidationService {
     private diagnostics: Diagnostic[] = [];
@@ -10,9 +11,10 @@ export class ValidationService {
     private parenBalance = 0;
     private lines: string[] = [];
     private text = '';
+    private languageMode: LanguageMode = 'slim';
 
-    constructor(documentationService: DocumentationService) {
-        void documentationService;
+    constructor() {
+        // Constructor intentionally empty
     }
 
     public async validate(textDocument: TextDocument): Promise<Diagnostic[]> {
@@ -22,6 +24,7 @@ export class ValidationService {
         this.braceCount = 0;
         this.lastOpenBraceLine = -1;
         this.parenBalance = 0;
+        this.languageMode = getLanguageModeFromDocument(textDocument);
 
         this.lines.forEach((line, lineIndex) => {
             this.validateLine(line, lineIndex);
@@ -38,6 +41,19 @@ export class ValidationService {
 
         const isSlimBlock =
             /^\d+\s+\w+\(\)/.test(trimmedLine) || /^s\d+\s+\d+\s+\w+\(\)/.test(trimmedLine);
+
+        // Check for SLiM-specific syntax in Eidos files
+        if (this.languageMode === 'eidos' && isSlimBlock) {
+            this.diagnostics.push({
+                severity: DiagnosticSeverity.Error,
+                range: {
+                    start: { line: lineIndex, character: 0 },
+                    end: { line: lineIndex, character: line.length },
+                },
+                message: 'SLiM callback blocks are not valid in Eidos files. Use .slim extension for SLiM scripts.',
+                source: 'slim-tools',
+            });
+        }
 
         // Validate brace balance
         this.validateBraceBalance(line, lineIndex, isSlimBlock);

@@ -1,7 +1,6 @@
 // Handler registration and initialization
-import { InitializeResult, TextDocumentSyncKind } from 'vscode-languageserver/node';
+import { InitializeResult, TextDocumentSyncKind, CompletionParams, CompletionItem } from 'vscode-languageserver/node';
 import { registerHoverProvider } from '../providers/hover';
-import { registerCompletionProvider, registerCompletionResolveProvider } from '../providers/completion';
 import { registerSignatureHelpProvider } from '../providers/signature-help';
 import { registerReferencesProvider } from '../providers/references';
 import { registerDocumentSymbolsProvider } from '../providers/document-symbols';
@@ -30,7 +29,7 @@ export function getInitializeResult(): InitializeResult {
 export function registerHandlers(
     context: LanguageServerContext
 ): void {
-    const { connection, documents, validationService } = context;
+    const { connection, documents, validationService, completionService } = context;
 
     // Register document change handler
     documents.onDidChangeContent(async (change) => {
@@ -41,12 +40,19 @@ export function registerHandlers(
     // Register hover provider
     registerHoverProvider(context);
 
-    // Register completion providers
-    connection.onCompletion(registerCompletionProvider(documents));
-    connection.onCompletionResolve(registerCompletionResolveProvider());
+    // Register completion providers using CompletionService
+    connection.onCompletion((params: CompletionParams) => {
+        const document = documents.get(params.textDocument.uri);
+        if (!document) return null;
+        return completionService.getCompletions(document, params.position);
+    });
+
+    connection.onCompletionResolve((item: CompletionItem) => {
+        return completionService.resolveCompletion(item);
+    });
 
     // Register signature help provider
-    connection.onSignatureHelp(registerSignatureHelpProvider(documents));
+    connection.onSignatureHelp(registerSignatureHelpProvider(context));
 
     // Register references provider
     connection.onReferences(registerReferencesProvider());

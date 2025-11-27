@@ -22,6 +22,7 @@
   ],
   "activationEvents": [
     "onLanguage:slim",
+    "onLanguage:eidos",
     "onCustomEditor:slimdoc"
   ],
   "contributes": {
@@ -37,11 +38,27 @@
         ],
         "firstLine": "^#!.*\\bslim\\b",
         "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "eidos",
+        "aliases": [
+          "Eidos",
+          "eidos"
+        ],
+        "extensions": [
+          ".eidos"
+        ],
+        "configuration": "./language-configuration-eidos.json"
       }
     ],
     "grammars": [
       {
         "language": "slim",
+        "scopeName": "source.slim",
+        "path": "./syntaxes/slim.tmLanguage.json"
+      },
+      {
+        "language": "eidos",
         "scopeName": "source.slim",
         "path": "./syntaxes/slim.tmLanguage.json"
       }
@@ -52,6 +69,10 @@
     "snippets": [
       {
         "language": "slim",
+        "path": "./snippets/slim.json"
+      },
+      {
+        "language": "eidos",
         "path": "./snippets/slim.json"
       }
     ],

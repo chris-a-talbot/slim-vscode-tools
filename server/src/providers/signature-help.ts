@@ -1,10 +1,12 @@
 // Signature help provider
-import { SignatureHelp, MarkupKind, TextDocuments, SignatureHelpParams } from 'vscode-languageserver/node';
-import { TextDocument } from 'vscode-languageserver-textdocument';
+import { SignatureHelp, MarkupKind, SignatureHelpParams } from 'vscode-languageserver/node';
 import { getWordAndContextAtPosition } from '../utils/positions';
-import { functionsData } from '../config/config';
+import { getLanguageModeFromDocument } from '../utils/language-mode';
+import { LanguageServerContext } from '../config/types';
 
-export function registerSignatureHelpProvider(documents: TextDocuments<TextDocument>) {
+export function registerSignatureHelpProvider(context: LanguageServerContext) {
+    const { documents, documentationService } = context;
+    
     return (params: SignatureHelpParams): SignatureHelp | null => {
         const document = documents.get(params.textDocument.uri);
         if (!document) return null;
@@ -12,8 +14,12 @@ export function registerSignatureHelpProvider(documents: TextDocuments<TextDocum
         const position = params.position;
         const text = document.getText();
         const word = getWordAndContextAtPosition(text, position);
+        const languageMode = getLanguageModeFromDocument(document);
 
         console.log('Signature Help Triggered for:', word);
+
+        // Get functions filtered by language mode
+        const functionsData = documentationService.getFunctions(languageMode);
 
         if (word && functionsData[word.word]) {
             const functionInfo = functionsData[word.word];

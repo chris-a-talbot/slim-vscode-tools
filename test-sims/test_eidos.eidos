@@ -1,0 +1,39 @@
+// Test Eidos file - should only have access to Eidos features
+// SLiM-specific features should not be available here
+
+// Eidos-only code example
+function testEidosFunction(x) {
+    // Eidos functions should work
+    result = sum(x);
+    print("Sum: " + result);
+    
+    // Dictionary should be available (Eidos class)
+    dict = Dictionary();
+    dict.setValue("key", result);
+    
+    return result;
+}
+
+// Testing basic Eidos functionality
+values = c(1, 2, 3, 4, 5);
+mean_val = mean(values);
+print("Mean: " + mean_val);
+
+// String operations
+text = "Hello from Eidos";
+print(text);
+
+// Control flow
+for (i in seqLen(10)) {
+    if (i % 2 == 0) {
+        print("Even: " + i);
+    }
+}
+
+// The following SLiM-specific code should trigger an error:
+// initialize() {
+//     initializeMutationRate(1e-7);
+// }
+
+// SLiM classes like Species, Community, Individual should NOT be available in completions
+
