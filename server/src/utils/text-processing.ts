@@ -89,3 +89,44 @@ export function removeStringsAndComments(line: string): string {
         .replace(/\/\*.*?\*\//g, '')
         .trim();
 }
+
+export function escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+export function countDelimiters(
+    text: string, 
+    open: string, 
+    close: string
+): { openCount: number; closeCount: number } {
+    const openCount = (text.match(new RegExp(escapeRegex(open), 'g')) || []).length;
+    const closeCount = (text.match(new RegExp(escapeRegex(close), 'g')) || []).length;
+    return { openCount, closeCount };
+}
+
+export function countParens(text: string): { openCount: number; closeCount: number } {
+    return countDelimiters(text, '(', ')');
+}
+
+export function countBraces(text: string): { openCount: number; closeCount: number } {
+    return countDelimiters(text, '{', '}');
+}
+
+export function countCommasOutsideParens(text: string): number {
+    const cleaned = removeStringsAndComments(text);
+    
+    let commaCount = 0;
+    let parenDepth = 0;
+    
+    for (const char of cleaned) {
+        if (char === '(') {
+            parenDepth++;
+        } else if (char === ')') {
+            parenDepth--;
+        } else if (char === ',' && parenDepth === 0) {
+            commaCount++;
+        }
+    }
+    
+    return commaCount;
+}

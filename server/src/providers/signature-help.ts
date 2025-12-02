@@ -2,23 +2,7 @@ import { SignatureHelp, SignatureHelpParams, MarkupKind } from 'vscode-languages
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { LanguageServerContext } from '../config/types';
 import { getFileType } from '../utils/file-type';
-
-function countCommasOutsideParens(text: string): number {
-    let commaCount = 0;
-    let parenDepth = 0;
-    
-    for (const char of text) {
-        if (char === '(') {
-            parenDepth++;
-        } else if (char === ')') {
-            parenDepth--;
-        } else if (char === ',' && parenDepth === 0) {
-            commaCount++;
-        }
-    }
-    
-    return commaCount;
-}
+import { countCommasOutsideParens } from '../utils/text-processing';
 
 export function onSignatureHelp(
     params: SignatureHelpParams,

@@ -229,6 +229,48 @@ Initial release of `slim-tools` with the following features:
 - Added `test.eidos`: Lotka-Volterra predator-prey dynamics simulator (pure Eidos implementation)
 - Added unit tests for language server providers in `server/src/test`
 
+### [0.0.11]
+
+#### Major Features
+- **Go to Definition**: Jump to the definition of variables, functions, constants, and SLiM objects (`definitions.ts`)
+  - Recognizes multiple ways of defining species, populations, mutations, interactions, and other objects
+  - Supports callback pseudo-parameters (e.g., `mut`, `individual`, `subpop`)
+- **Code Actions (Quick Fixes)**: Automated fixes for common syntax errors (`code-actions.ts`)
+  - Add missing semicolons, close unclosed strings, and fix opening and closing braces
+  - Supports individual or batch actions
+
+#### New Utilities
+- `diagnostics.ts`: Centralized diagnostic creation utilities
+- `validation-utils.ts`: Helper utilities for getting character ranges for validation diagnostics
+
+#### Refactored Validation System
+
+##### `validation-service.ts`
+- Integrated with document caching system for significant performance improvement in large files
+- Modular validation pipeline with clear extension points
+- Prepared infrastructure for future validation modules
+
+##### `structure.ts`
+- Complete rewrite with enhanced error detection
+  - Multi-line string tracking with proper escape sequence handling
+  - Improved brace, bracket, and parenthesis balance tracking
+  - Better detection of unclosed constructs
+
+#### Enhanced Caching System (`document-cache.ts`)
+- Implemented configurable LRU (Least Recently Used) eviction policy
+- Separate caching for tracking state and diagnostics
+
+#### Test Coverage
+- **New test suites** (4 new files):
+  - `definitions.test.ts`: Comprehensive tests for go-to-definition functionality
+  - `document-cache.test.ts`: Tests for caching system
+  - `structure-validation.test.ts`: Tests for structure validation
+  
+#### Bug Fixes/Minor Changes
+- Fixed subpopulation definition patterns to handle multispecies models
+- Improved multi-line string handling in validation
+- Removed `--passWithNoTests` flag from language server test script (tests now required to pass)
+
 ## Development notes
 
 1. First install the dependencies with `npm install`

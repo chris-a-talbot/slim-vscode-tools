@@ -12,7 +12,7 @@ export function trackInstanceDefinitions(
 ): TrackingState {
     // Check cache first for massive performance improvement
     if (!state) {
-        const cached = documentCache.get(document);
+        const cached = documentCache.getTrackingState(document);
         if (cached) {
             return cached;
         }
@@ -263,7 +263,7 @@ export function trackInstanceDefinitions(
 
     // Cache the result for future calls (only if not using provided state)
     if (!state) {
-        documentCache.set(document, trackingState);
+        documentCache.setTrackingState(document, trackingState);
     }
 
     return trackingState;
