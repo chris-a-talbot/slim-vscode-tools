@@ -3,6 +3,8 @@ import { TextDocuments } from 'vscode-languageserver/node';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { DocumentationService } from '../services/documentation-service';
 import { CompletionService } from '../services/completion-service';
+import { ValidationService } from '../services/validation-service';
+import { Diagnostic } from 'vscode-languageserver';
 
 // ============================================================================
 // Language mode
@@ -103,6 +105,21 @@ export interface ParseOptions {
 }
 
 // ============================================================================
+// Formatting
+// ============================================================================
+
+export interface FormattingOptions {
+    tabSize: number;
+    insertSpaces: boolean;
+}
+
+export interface UserFormattingConfig {
+    tabSize?: number;
+    insertSpaces?: boolean;
+    maxConsecutiveBlankLines?: number;
+}
+
+// ============================================================================
 // State tracking
 // ============================================================================
 
@@ -127,6 +144,36 @@ export interface CallbackState {
     callbackStartLine: number;
 }
 
+// ============================================================================
+// Caching
+// ============================================================================
+
+export interface CacheEntry {
+    version: number;
+    trackingState?: TrackingState;
+    diagnostics?: Diagnostic[];
+}
+
+export interface CacheStats {
+    hits: number;
+    misses: number;
+    evictions: number;
+}
+
+// ============================================================================
+// Validation
+// ============================================================================
+
+export interface StructureValidationState {
+    braceCount: number;
+    lastOpenBraceLine: number;
+    parenBalance: number;
+    bracketBalance: number;
+    inString: boolean;
+    stringChar: string | null;
+    stringStartLine: number;
+    stringStartChar: number;
+}
 
 // ============================================================================
 // Language server
@@ -137,4 +184,5 @@ export interface LanguageServerContext {
     documents: TextDocuments<TextDocument>;
     documentationService: DocumentationService;
     completionService: CompletionService;
+    validationService: ValidationService;
 }

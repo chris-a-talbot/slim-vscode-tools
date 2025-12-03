@@ -55,3 +55,39 @@ This folder contains various SLiM simulation scripts for testing and demonstrati
 - Tracks populations over 400 generations with visual output
 - Compares observed dynamics to theoretical equilibrium predictions with deviation analysis
 - Useful for testing .eidos file type support and Eidos-only language features
+
+## Visualization Test Scripts
+
+These scripts are specifically designed to test the real-time visualization feature:
+
+### test_viz_simple.slim
+**Simple Population Growth**
+- Single population (p1) with 500 individuals
+- Neutral mutations only (m1)
+- Runs for 1000 generations
+- Tests basic population size and fitness tracking
+- Good starting point for testing visualization
+
+### test_viz_multi.slim
+**Multi-Population with Migration**
+- Three populations: p1 (1000), p2 (500), p3 (250)
+- Two mutation types: neutral (m1) and deleterious (m2)
+- Population p3 added dynamically at generation 100
+- Migration between populations
+- Tests multi-population visualization and dynamic population addition
+
+### test_viz_extinction.slim
+**Population Extinction**
+- Two populations: p1 (100) and p2 (200)
+- Deleterious mutations (m1) with s = -0.3
+- Population p1 goes extinct at generation 100
+- Tests handling of extinct populations in visualization
+- Verifies robust error handling
+
+### test_viz_complex.slim
+**Complex Scenario with Bottleneck**
+- Three mutation types: neutral, beneficial, deleterious
+- Population bottleneck at generation 500 (1000 → 50)
+- Recovery at generation 510 (50 → 500)
+- Tests selection dynamics and fitness tracking
+- Demonstrates visualization during dramatic demographic events

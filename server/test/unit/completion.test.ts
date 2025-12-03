@@ -3,12 +3,14 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { CompletionItemKind } from 'vscode-languageserver/node';
 import { DocumentationService } from '../../src/services/documentation-service';
 import { CompletionService } from '../../src/services/completion-service';
+import { setLoggerSilent } from '../../src/utils/logger';
 
 describe('Completion Service', () => {
     let documentationService: DocumentationService;
     let completionService: CompletionService;
 
     beforeEach(() => {
+        setLoggerSilent(true);
         // Use real documentation service - it will load from docs/ directory
         documentationService = new DocumentationService();
         completionService = new CompletionService(documentationService);

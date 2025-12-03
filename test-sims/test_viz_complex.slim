@@ -1,0 +1,44 @@
+// Test Script 4: Complex Scenario
+// This script tests multiple features: beneficial/deleterious mutations, 
+// population bottleneck, and selection
+
+initialize() {
+    initializeMutationType("m1", 0.5, "f", 0.0);        // Neutral
+    initializeMutationType("m2", 0.1, "f", 0.1);        // Beneficial
+    initializeMutationType("m3", 0.7, "f", -0.05);      // Deleterious
+    initializeGenomicElementType("g1", c(m1, m2, m3), c(0.7, 0.1, 0.2));
+    initializeGenomicElement(g1, 0, 99999);
+    initializeMutationRate(1e-7);
+    initializeRecombinationRate(1e-8);
+}
+
+1 early() {
+    sim.addSubpop("p1", 1000);
+}
+
+// Bottleneck at generation 500
+500 early() {
+    catn("Bottleneck: reducing population from " + p1.individualCount + " to 50");
+    p1.setSubpopulationSize(50);
+}
+
+// Recovery after bottleneck
+510 early() {
+    catn("Recovery: expanding population to 500");
+    p1.setSubpopulationSize(500);
+}
+
+1:1000 late() {
+    if (sim.cycle % 50 == 0) {
+        catn("Gen " + sim.cycle + ": size=" + p1.individualCount + 
+             ", mean_fitness=" + mean(p1.cachedFitness));
+    }
+}
+
+1000 late() {
+    catn("Simulation finished!");
+    catn("Final population: " + p1.individualCount);
+    catn("Final mean fitness: " + mean(p1.cachedFitness));
+    sim.simulationFinished();
+}
+

@@ -1,0 +1,50 @@
+// Test Script 2: Multi-Population with Migration
+// This script tests multiple populations with dynamic population addition
+
+initialize() {
+    initializeMutationType("m1", 0.5, "f", 0.0);
+    initializeMutationType("m2", 0.5, "f", -0.1);
+    initializeGenomicElementType("g1", c(m1, m2), c(0.8, 0.2));
+    initializeGenomicElement(g1, 0, 99999);
+    initializeMutationRate(1e-7);
+    initializeRecombinationRate(1e-8);
+}
+
+1 early() {
+    sim.addSubpop("p1", 1000);
+    sim.addSubpop("p2", 500);
+}
+
+1:99 late() {
+    // Migration between p1 and p2 only (before p3 exists)
+    p1.setMigrationRates(p2, 0.01);
+    p2.setMigrationRates(p1, 0.01);
+    
+    if (sim.cycle % 50 == 0) {
+        catn("Gen " + sim.cycle + ": p1=" + p1.individualCount + 
+             ", p2=" + p2.individualCount);
+    }
+}
+
+100 early() {
+    sim.addSubpop("p3", 250);
+    catn("Added population p3 at generation 100");
+}
+
+100:500 late() {
+    // Migration between all three populations (after p3 is added)
+    p1.setMigrationRates(c(p2, p3), c(0.01, 0.01));
+    p2.setMigrationRates(c(p1, p3), c(0.01, 0.01));
+    p3.setMigrationRates(c(p1, p2), c(0.01, 0.01));
+    
+    if (sim.cycle % 50 == 0) {
+        catn("Gen " + sim.cycle + ": p1=" + p1.individualCount + 
+             ", p2=" + p2.individualCount + ", p3=" + p3.individualCount);
+    }
+}
+
+500 late() {
+    catn("Simulation finished!");
+    sim.simulationFinished();
+}
+

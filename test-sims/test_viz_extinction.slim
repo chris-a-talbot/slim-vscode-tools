@@ -1,0 +1,40 @@
+// Test Script 3: Population Extinction
+// This script tests handling of extinct populations
+
+initialize() {
+    initializeMutationType("m1", 0.5, "f", -0.3);
+    initializeGenomicElementType("g1", m1, 1.0);
+    initializeGenomicElement(g1, 0, 99999);
+    initializeMutationRate(1e-6);
+    initializeRecombinationRate(1e-8);
+}
+
+1 early() {
+    sim.addSubpop("p1", 100);
+    sim.addSubpop("p2", 200);
+}
+
+1:99 late() {
+    if (sim.cycle % 20 == 0) {
+        catn("Gen " + sim.cycle + ": p1=" + p1.individualCount + 
+             ", p2=" + p2.individualCount);
+    }
+}
+
+101:200 late() {
+    if (sim.cycle % 20 == 0) {
+        catn("Gen " + sim.cycle + ": p1=extinct, p2=" + p2.individualCount);
+    }
+}
+
+100 early() {
+    catn("Causing extinction of p1 at generation 100");
+    p1.setSubpopulationSize(0);
+}
+
+200 late() {
+    catn("Simulation finished!");
+    catn("Final p2 size: " + p2.individualCount);
+    sim.simulationFinished();
+}
+

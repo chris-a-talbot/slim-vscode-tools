@@ -4,18 +4,23 @@ import { DocumentationService } from '../../src/services/documentation-service';
 import { onSignatureHelp } from '../../src/providers/signature-help';
 import { LanguageServerContext } from '../../src/config/types';
 import { CompletionService } from '../../src/services/completion-service';
+import { ValidationService } from '../../src/services/validation-service';
 import { Connection, TextDocuments } from 'vscode-languageserver/node';
+import { setLoggerSilent } from '../../src/utils/logger';
 
 describe('Signature Help Provider', () => {
     let documentationService: DocumentationService;
     let completionService: CompletionService;
+    let validationService: ValidationService;
     let context: LanguageServerContext;
     let mockDocuments: any;
 
     beforeEach(() => {
+        setLoggerSilent(true);
         // Use real documentation service - it will load from docs/ directory
         documentationService = new DocumentationService();
         completionService = new CompletionService(documentationService);
+        validationService = new ValidationService(documentationService);
         
         // Verify documentation loaded successfully
         const functions = documentationService.getFunctions();
@@ -33,6 +38,7 @@ describe('Signature Help Provider', () => {
             documents: mockDocuments as TextDocuments<TextDocument>,
             documentationService,
             completionService,
+            validationService,
         };
     });
 

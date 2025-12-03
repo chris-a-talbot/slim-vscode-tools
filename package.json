@@ -2,7 +2,7 @@
   "name": "slim-vscode-tools",
   "displayName": "slim-tools",
   "description": "language extension for the SLiM simulation package",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "icon": "slim_icon.png",
   "publisher": "andrewkern",
   "repository": {
@@ -74,12 +74,38 @@
       }
     ],
     "configuration": {
-      "title": "SLiM Simulator",
+      "title": "SLiM/Eidos Tools",
       "properties": {
         "slimTools.slimInterpreterPath": {
           "type": "string",
           "default": "slim",
           "description": "Path to the SLiM interpreter (e.g., /usr/local/bin/slim or C:\\\\Users\\\\YourName\\\\slim.exe)"
+        },
+        "slimTools.formatting.tabSize": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 20,
+          "description": "Number of spaces per indentation level when formatting SLiM/Eidos code"
+        },
+        "slimTools.formatting.insertSpaces": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use spaces instead of tabs for indentation when formatting"
+        },
+        "slimTools.formatting.maxConsecutiveBlankLines": {
+          "type": "number",
+          "default": 2,
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Maximum number of consecutive blank lines to preserve when formatting"
+        },
+        "slimTools.visualization.maxDataPoints": {
+          "type": "number",
+          "default": 500,
+          "minimum": 100,
+          "maximum": 10000,
+          "description": "Maximum number of data points to display in visualization charts (older points are discarded)"
         }
       }
     },
@@ -110,6 +136,12 @@
         "title": "Run SLiM/Eidos Script",
         "category": "SLiM",
         "icon": "$(play)"
+      },
+      {
+        "command": "slimTools.runSLiMWithVisualization",
+        "title": "Run SLiM with Real-Time Visualization",
+        "category": "SLiM",
+        "icon": "$(graph)"
       }
     ],
     "keybindings": [
@@ -118,6 +150,12 @@
         "key": "ctrl+shift+r",
         "mac": "cmd+shift+r",
         "when": "editorLangId == slim || editorLangId == eidos"
+      },
+      {
+        "command": "slimTools.runSLiMWithVisualization",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v",
+        "when": "editorLangId == slim"
       }
     ],
     "menus": {
@@ -126,6 +164,11 @@
           "command": "slimTools.runSLiM",
           "when": "editorLangId == slim || editorLangId == eidos",
           "group": "navigation@1"
+        },
+        {
+          "command": "slimTools.runSLiMWithVisualization",
+          "when": "editorLangId == slim",
+          "group": "navigation@2"
         }
       ],
       "editor/title/run": [
@@ -133,6 +176,12 @@
           "command": "slimTools.runSLiM",
           "when": "editorLangId == slim || editorLangId == eidos",
           "group": "navigation@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "slimTools.runSLiMWithVisualization",
+          "when": "editorLangId == slim"
         }
       ]
     }

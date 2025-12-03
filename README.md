@@ -72,6 +72,47 @@ Also adds a command to run the SLiM script in Activity Bar.
 
 ![Status Bar Integration](./images/run_slim.png)
 
+### 🎨 Real-Time Visualization (NEW!)
+
+Run SLiM simulations with **automatic real-time visualization** directly in VS Code! The extension:
+
+- **Automatically analyzes** your script to detect populations, mutations, genomic elements, and more
+- **Zero manual instrumentation required** - no need to add tracking code
+- **Generates context-aware tracking code** based on what's in your script
+- **Creates live-updating charts** showing:
+  - Population sizes over time
+  - Mean fitness per population
+  - Mutation counts and frequencies
+  - Multi-population dynamics
+- **Non-invasive** - your original script is never modified
+- **Handles complex scenarios**:
+  - Multiple populations with migration
+  - Dynamic population addition/removal
+  - Population extinctions
+  - Multi-species models
+  - WF and nonWF models
+
+**How to Use:**
+1. Open any `.slim` file
+2. Press `Ctrl+Shift+V` (Mac: `Cmd+Shift+V`) or right-click → "Run SLiM with Real-Time Visualization"
+3. Watch your simulation come to life with real-time charts!
+
+**Features:**
+- Multi-chart dashboard powered by Chart.js
+- Automatic detection of simulation entities (populations, mutations, etc.)
+- Live progress notifications
+- Cancellable long-running simulations
+- Efficient rendering (handles 500+ generations smoothly)
+
+**Test Scripts:**
+The `test-sims/` folder includes four visualization test scripts:
+- `test_viz_simple.slim` - Basic single population
+- `test_viz_multi.slim` - Multiple populations with migration
+- `test_viz_extinction.slim` - Extinction handling
+- `test_viz_complex.slim` - Bottleneck and selection dynamics
+
+See the [Visualization Implementation Guide](./docs/VISUALIZATION_IMPLEMENTATION_GUIDE.md) for complete technical details.
+
 ## Requirements
 
 - Visual Studio Code version 1.96.0 or higher
@@ -101,6 +142,10 @@ Also adds a command to run the SLiM script in Activity Bar.
 This extension contributes the following settings:
 
 * `slimTools.slimInterpreterPath`: Path to the SLiM interpreter (e.g., `/usr/local/bin/slim` or `C:\\Users\\YourName\\slim.exe`).
+* `slimTools.formatting.tabSize`: Number of spaces per indentation level (default: 4).
+* `slimTools.formatting.insertSpaces`: Use spaces instead of tabs (default: true).
+* `slimTools.formatting.maxConsecutiveBlankLines`: Maximum consecutive blank lines (default: 2).
+* `slimTools.visualization.maxDataPoints`: Maximum data points in visualization charts (default: 500).
 
 ## Diagnostic Features
 
@@ -228,6 +273,48 @@ Initial release of `slim-tools` with the following features:
 #### Test Files
 - Added `test.eidos`: Lotka-Volterra predator-prey dynamics simulator (pure Eidos implementation)
 - Added unit tests for language server providers in `server/src/test`
+
+### [0.0.11]
+
+#### Major Features
+- **Go to Definition**: Jump to the definition of variables, functions, constants, and SLiM objects (`definitions.ts`)
+  - Recognizes multiple ways of defining species, populations, mutations, interactions, and other objects
+  - Supports callback pseudo-parameters (e.g., `mut`, `individual`, `subpop`)
+- **Code Actions (Quick Fixes)**: Automated fixes for common syntax errors (`code-actions.ts`)
+  - Add missing semicolons, close unclosed strings, and fix opening and closing braces
+  - Supports individual or batch actions
+
+#### New Utilities
+- `diagnostics.ts`: Centralized diagnostic creation utilities
+- `validation-utils.ts`: Helper utilities for getting character ranges for validation diagnostics
+
+#### Refactored Validation System
+
+##### `validation-service.ts`
+- Integrated with document caching system for significant performance improvement in large files
+- Modular validation pipeline with clear extension points
+- Prepared infrastructure for future validation modules
+
+##### `structure.ts`
+- Complete rewrite with enhanced error detection
+  - Multi-line string tracking with proper escape sequence handling
+  - Improved brace, bracket, and parenthesis balance tracking
+  - Better detection of unclosed constructs
+
+#### Enhanced Caching System (`document-cache.ts`)
+- Implemented configurable LRU (Least Recently Used) eviction policy
+- Separate caching for tracking state and diagnostics
+
+#### Test Coverage
+- **New test suites** (4 new files):
+  - `definitions.test.ts`: Comprehensive tests for go-to-definition functionality
+  - `document-cache.test.ts`: Tests for caching system
+  - `structure-validation.test.ts`: Tests for structure validation
+  
+#### Bug Fixes/Minor Changes
+- Fixed subpopulation definition patterns to handle multispecies models
+- Improved multi-line string handling in validation
+- Removed `--passWithNoTests` flag from language server test script (tests now required to pass)
 
 ## Development notes
 

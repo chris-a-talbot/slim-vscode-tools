@@ -21,6 +21,7 @@ import {
 
 import { DocTreeProvider } from './docTreeProvider';
 import { DocSection } from './types';
+import { runSlimWithVisualization } from './visualizationRunner';
 
 let client: LanguageClient;
 
@@ -58,7 +59,13 @@ export function activate(context: ExtensionContext) {
         synchronize: {
             // Notify the server about file changes to '.slim/.eidos' files contained in the workspace
             fileEvents: workspace.createFileSystemWatcher('**/*.{slim,eidos}'),
+            // Sync configuration changes to the server
+            configurationSection: 'slimTools'
         },
+        initializationOptions: {
+            // Pass initial configuration to server
+            formatting: workspace.getConfiguration('slimTools.formatting')
+        }
     };
 
     // Create the language client and start the client.
@@ -146,6 +153,59 @@ export function activate(context: ExtensionContext) {
         terminal.show();
     });
 
+    // ========================================
+    // Real-Time Visualization Command
+    // ========================================
+    const runSlimWithVizCommand = commands.registerCommand(
+        'slimTools.runSLiMWithVisualization',
+        async () => {
+            const editor = window.activeTextEditor;
+            
+            // Validate active editor
+            if (!editor) {
+                window.showErrorMessage('No active file. Please open a SLiM script first.');
+                return;
+            }
+
+            const filePath = editor.document.fileName;
+            
+            // Check file type
+            if (!filePath.endsWith('.slim')) {
+                window.showErrorMessage(
+                    'Visualization is only available for .slim files (not .eidos files).'
+                );
+                return;
+            }
+            
+            // Check if file is saved
+            if (editor.document.isDirty) {
+                const choice = await window.showWarningMessage(
+                    'File has unsaved changes. Save before running?',
+                    'Save and Run', 'Cancel'
+                );
+                
+                if (choice === 'Save and Run') {
+                    await editor.document.save();
+                } else {
+                    return;
+                }
+            }
+            
+            // Get SLiM interpreter path from settings
+            const config = workspace.getConfiguration('slimTools');
+            const interpreterPath = config.get<string>('slimInterpreterPath', 'slim');
+            
+            // Run simulation with visualization
+            try {
+                await runSlimWithVisualization(filePath, interpreterPath);
+            } catch (error) {
+                const errorMessage = error instanceof Error ? error.message : String(error);
+                window.showErrorMessage(`Visualization failed: ${errorMessage}`);
+                console.error('Visualization error:', error);
+            }
+        }
+    );
+
     // Register the DocTreeProvider
     const docTreeProvider = new DocTreeProvider(context);
     window.registerTreeDataProvider('docTreeView', docTreeProvider);
@@ -232,6 +292,7 @@ export function activate(context: ExtensionContext) {
     // Cleanup temp files on deactivation
     context.subscriptions.push(
         runSlimCommand,
+        runSlimWithVizCommand,
         showDocCommand,
         {
             dispose: () => {
